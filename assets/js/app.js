@@ -4,6 +4,8 @@ const cat=window.ACORDE_CATHOLIC||{songs:[],artists:[],albums:[]};
 data.songs.push(...cat.songs);data.artists.push(...cat.artists);data.albums.push(...cat.albums);
 const importados=window.ACORDE_IMPORTADAS||{songs:[],artists:[],albums:[]};
 data.songs.push(...importados.songs);data.artists.push(...importados.artists);data.albums.push(...importados.albums);
+const terco=window.ACORDE_TERCO||{songs:[],artists:[],albums:[],playlists:{},schedule:{}};
+data.songs.push(...terco.songs);data.artists.push(...terco.artists);data.albums.push(...terco.albums);
 const page=document.body.dataset.page||'home';const base=document.body.dataset.base||'.';
 const link=path=>{const route=String(path||'index.html');return `${base}/${route.endsWith('/')?route+'index.html':route}`};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -113,7 +115,24 @@ function artistPage(){const id=new URLSearchParams(location.search).get('id');le
  <section class="section"><div class="section-head"><h2>Álbuns</h2></div><div class="album-grid">${alb.map(albumCard).join('')||'<div class="empty">Nenhum álbum cadastrado ainda.</div>'}</div></section>`)}
 
 function galleryPage(){shell(`${heading('ACERVO VISUAL','A música também se vê','Uma galeria organizada por álbuns, artistas e músicas, com fotografias ilustrativas locais nos exemplos.')}<div class="soft-panel"><div><h2>Escolha como explorar.</h2><p>As capas e retratos são imagens ilustrativas criadas para a demonstração; substitua por capas oficiais autorizadas em assets/img se necessário.</p></div><div class="song-buttons"><a class="btn btn-primary" href="${link('gallery/albuns/')}">Ver álbuns</a><a class="btn btn-light" href="${link('gallery/musicas/')}">Ver músicas</a></div></div><section class="section"><div class="section-head"><h2>Álbuns em destaque</h2><a class="text-link" href="${link('gallery/albuns/')}">Todos ↗</a></div><div class="album-grid">${allAlbums().map(albumCard).join('')}</div></section>`)}
-function albumsPage(){const id=new URLSearchParams(location.search).get('id');let albums=allAlbums(),alb=albums.find(x=>x.id===id);if(alb){let songs=allSongs().filter(x=>x.albumId===id);shell(`${heading('ÁLBUM',esc(alb.title),esc(artistBy(alb.artistId).name)+' · '+esc(alb.year||''))}<div class="two-col"><div class="panel"><h2>Faixas com cifra</h2><div class="stack" style="margin-top:18px">${songs.map(musicCard).join('')||'<div class="empty">Sem faixas publicadas.</div>'}</div></div><div class="panel"><img style="width:100%;border-radius:16px" src="${imageUrl(alb.cover)}" alt="Capa ilustrativa"><p class="muted tiny" style="margin-top:12px">Capa fotográfica ilustrativa, criada para esta demonstração.</p></div></div>`)}else shell(`${heading('GALERIA','Álbuns','Organizados para navegar rapidamente de um álbum às suas músicas.')}<div class="album-grid">${albums.map(albumCard).join('')}</div>`)}
+function albumsPage(){
+ const id=new URLSearchParams(location.search).get('id');
+ const albums=allAlbums(),album=albums.find(x=>x.id===id);
+ if(album){
+  const songIds=album.terco?album.trackIds:undefined;
+  const tracks=songIds? songIds.map(id=>allSongs().find(s=>s.id===id)).filter(Boolean):allSongs().filter(s=>s.albumId===id);
+  const alternatives=album.terco?(album.alternativeIds||[]).map(id=>allSongs().find(s=>s.id===id)).filter(Boolean):[];
+  const section=(label,arr)=>`<div class="panel"><h2>${esc(label)}</h2><div class="stack" style="margin-top:16px">${arr.map((s,i)=>`<div style="display:flex;align-items:center;gap:9px"><span class="tag">${i+1}</span><div style="flex:1">${musicCard(s)}</div></div>`).join('')||'<div class="empty">Sem cifras nesta seleção.</div>'}</div></div>`;
+  shell(`${heading(album.terco?'TERÇO DOS HOMENS':'ÁLBUM',esc(album.title),album.terco?esc(album.days||'Repertório do Terço'):esc(artistBy(album.artistId).name)+' · '+esc(album.year||''))}
+  <div class="two-col"><div class="stack">${section('Músicas do mistério',tracks)}${alternatives.length?section(album.alternativeLabel||'Outra opção de repertório',alternatives):''}<a class="btn btn-light" href="${link('gallery/albuns/')}">← Todos os álbuns</a></div>
+  <aside class="panel"><img style="width:100%;border-radius:16px" src="${imageUrl(album.cover)}" alt="Capa do álbum ${esc(album.title)}"><p class="muted" style="margin-top:12px">Terço dos Homens · ${esc(album.days||'')}</p><p>Escolha uma faixa para abrir sua cifra com rolagem e transposição.</p></aside></div>`);
+ }else{
+  const rosary=albums.filter(a=>a.terco),others=albums.filter(a=>!a.terco);
+  shell(`${heading('GALERIA','Álbuns','Explore os repertórios e abra as cifras dentro do AcordeEDU.')}
+  ${rosary.length?`<section class="section"><div class="section-head"><h2>Terço dos Homens</h2></div><div class="album-grid">${rosary.map(albumCard).join('')}</div></section>`:''}
+  <section class="section"><div class="section-head"><h2>Outros álbuns</h2></div><div class="album-grid">${others.map(albumCard).join('')}</div></section>`);
+ }
+}
 function gallerySongs(){shell(`${heading('GALERIA','Músicas e referências','Todas as músicas e artistas têm páginas internas no Acorde Studio.')}<section><div class="section-head"><h2>Cifras disponíveis</h2></div><div class="music-grid">${allSongs().map(musicCard).join('')}</div></section><section class="section"><div class="section-head"><div><h2>Catálogo de músicas conhecidas</h2><p>Consulte títulos e artistas; as cifras completas serão publicadas após cadastro autorizado.</p></div></div>${filterUI('ext',knownSongs(),'Buscar música ou artista...')}</section>`);filterBox(knownSongs(),'ext','external')}
 
 function referencePage(){
