@@ -289,3 +289,27 @@ body h1,body h2,body h3{font-family:'DM Sans',Arial,sans-serif;letter-spacing:-.
   font-weight:900!important;
   text-shadow:0 0 8px #F900FF55!important;
 }
+
+
+/* Ajuste fino de leitura — escuro dessaturado e cifra maior */
+.cifra-body.cifra-theme-dark{
+  background:#231f26!important;
+  color:#fff!important;
+  border-color:#4a434f!important;
+  box-shadow:0 18px 42px #17131938!important;
+}
+.cifra-body.cifra-theme-dark .cifra-chord,
+.cifra-body.cifra-theme-dark .chord-at,
+.cifra-body.cifra-theme-dark .original-chords,
+.cifra-body.cifra-theme-dark .original-chords .chord-at,
+.cifra-body.cifra-theme-dark .inline-chord,
+.cifra-body.cifra-theme-dark .original-lyric .inline-chord{
+  color:#F900FF!important;
+  font-weight:900!important;
+  text-shadow:0 0 5px #F900FF38!important;
+}
+.cifra-body,
+.source-layout,
+.cifra-line{
+  font-size:var(--chord-size,18px);
+}
