@@ -1,22 +1,11 @@
 <!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#07182f"><meta name="description" content="AcordeEDU: cifras, artistas, músicas católicas, transposição de tom e repertórios.">
-<title>AcordeEDU — Cifras e Acordes</title>
-<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/site.css">
-</head>
-<body>
-<header class="site-header"><a class="brand" href="#inicio" id="brand" aria-label="Início AcordeEDU"><img src="assets/logo.svg" alt="Ícone do AcordeEDU"><span><strong>Acorde<span class="yellow">EDU</span></strong><small>Cifras • Letras • Acordes</small></span></a><nav class="nav" aria-label="Menu principal"><a href="#inicio" data-nav="inicio" class="on">⌂ Início</a><a href="#cifras" data-nav="cifras">♫ Cifras</a><a href="#artistas" data-nav="artistas">♙ Artistas</a><a href="#albuns" data-nav="albuns">◎ Álbuns</a><a href="#estilos" data-nav="estilos">⇄ Estilos</a><a href="#ferramentas" data-nav="ferramentas">⚙ Ferramentas</a></nav><a href="#repertorio" class="rep-link">♡ Meu Repertório</a></header>
-<div class="page-grid"><aside class="sidebar" aria-label="Explorar"><h3>Explorar</h3><a href="#cifras">♫ Cifras</a><a href="#artistas">♙ Artistas</a><a href="#albuns">◎ Álbuns</a><a href="#estilos">▱ Estilos Musicais</a><a href="#populares">☆ Mais Acessadas</a><a href="#catolica">✝ Música Católica</a><a href="#repertorio">♡ Meu Repertório</a><hr><h3>Ferramentas</h3><a href="#afinador">♩ Afinador</a><a href="#metronomo">♟ Metrônomo</a><a href="#dicionario">▦ Acordes</a><a href="#transpor">⇅ Transpor Tom</a></aside>
-<div class="main">
-<section class="hero" id="inicio"><div class="hero-content"><span class="eyebrow">O seu universo musical</span><h1>Encontre a cifra<br>da sua música <em>favorita</em></h1><form id="search-form" class="search"><span>⌕</span><input id="search" aria-label="Pesquisar músicas e artistas" placeholder="Buscar cifra, artista ou música…" autocomplete="off"><button type="submit">Buscar</button></form><p class="examples">Exemplos: <a href="#busca=Gusttavo%20Lima">Gusttavo Lima</a> · <a href="#busca=Padre%20Zezinho">Padre Zezinho</a> · <a href="#catolica">Músicas Católicas</a></p></div></section>
-<main id="app" tabindex="-1"><section class="intro-loading"><h2>AcordeEDU</h2><p>Carregando o catálogo e os artistas…</p></section></main>
-<footer>♫ <b>AcordeEDU</b> · Um espaço para aprender, tocar e compartilhar música. <span>© 2026</span></footer>
-</div></div>
-<div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="assets/catalogo.js"></script><script src="assets/site.js"></script>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111a26"><meta name="description" content="AcordeEDU: cifras inteligentes, artistas, álbuns e ferramentas musicais.">
+<title>Início • AcordeEDU</title><link rel="icon" type="image/png" href="./assets/img/acordeedu-favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./assets/css/style.css"></head>
+<body data-page="home" data-base="."><div id="app"><main style="max-width:800px;margin:10vh auto;padding:30px;font-family:Arial,sans-serif;color:#15233a"><h1>AcordeEDU</h1><p>Carregando o portal de cifras...</p><p>Se esta mensagem permanecer, extraia o ZIP completo e mantenha a pasta <strong>assets</strong> ao lado do arquivo <strong>index.html</strong>.</p></main></div><div id="toast" role="status" aria-live="polite"></div>
+<script src="./assets/js/config.js"></script><script src="./assets/js/data.js"></script>
+<script src="assets/js/catolicas.js"></script><script src="./assets/js/chords.js"></script><script src="./assets/js/app.js"></script>
 </body></html>
