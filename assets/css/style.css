@@ -463,3 +463,20 @@ body.reading-theme-dark .tag.reference-pending{
   background:#3d2949!important;
   color:#f0b7ff!important;
 }
+
+
+/* Ajuste final do modo claro — cinza mais suave */
+.cifra-body.cifra-theme-light{
+  background:#f2f2f4!important;
+  color:#000!important;
+  border-color:#e2e2e7!important;
+  box-shadow:0 12px 30px #18121f0b!important;
+}
+body.reading-theme-light .cifra-controls{
+  background:#fafafa!important;
+  border-color:#e6e6ea!important;
+}
+body.reading-theme-light .cifra-theme-prominent,
+body.reading-theme-light .cifra-theme-compact{
+  background:transparent!important;
+}
