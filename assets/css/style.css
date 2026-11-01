@@ -224,3 +224,68 @@ body h1,body h2,body h3{font-family:'DM Sans',Arial,sans-serif;letter-spacing:-.
 .inline-chord{
   font-weight:900!important;
 }
+
+
+/* Tema compacto ao lado da rolagem */
+.cifra-theme-prominent{display:none!important}
+.cifra-theme-compact{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:0 2px;
+  margin-left:1px;
+  vertical-align:middle;
+}
+.cifra-theme-compact .theme-icon{
+  font-size:.72rem;
+  line-height:1;
+  color:#7b8492;
+  font-weight:700;
+}
+.cifra-theme-compact .cifra-theme-track{
+  width:38px;
+  height:22px;
+  border-radius:999px;
+}
+.cifra-theme-compact .cifra-theme-knob{
+  width:16px;
+  height:16px;
+  top:2px;
+  left:2px;
+}
+.cifra-theme-compact input:checked + .cifra-theme-track .cifra-theme-knob{
+  transform:translateX(16px);
+}
+.cifra-theme-compact input:checked + .cifra-theme-track{
+  background:#2b1748;
+  border-color:#5c3f78;
+}
+.sr-only{
+  position:absolute!important;
+  width:1px!important;height:1px!important;
+  padding:0!important;margin:-1px!important;
+  overflow:hidden!important;clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;border:0!important;
+}
+
+/* Cores finais solicitadas */
+.cifra-body.cifra-theme-light .cifra-chord,
+.cifra-body.cifra-theme-light .chord-at,
+.cifra-body.cifra-theme-light .original-chords,
+.cifra-body.cifra-theme-light .original-chords .chord-at,
+.cifra-body.cifra-theme-light .inline-chord,
+.cifra-body.cifra-theme-light .original-lyric .inline-chord{
+  color:#5200FF!important;
+  font-weight:900!important;
+  text-shadow:none!important;
+}
+.cifra-body.cifra-theme-dark .cifra-chord,
+.cifra-body.cifra-theme-dark .chord-at,
+.cifra-body.cifra-theme-dark .original-chords,
+.cifra-body.cifra-theme-dark .original-chords .chord-at,
+.cifra-body.cifra-theme-dark .inline-chord,
+.cifra-body.cifra-theme-dark .original-lyric .inline-chord{
+  color:#F900FF!important;
+  font-weight:900!important;
+  text-shadow:0 0 8px #F900FF55!important;
+}
