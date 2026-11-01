@@ -480,3 +480,33 @@ body.reading-theme-light .cifra-theme-prominent,
 body.reading-theme-light .cifra-theme-compact{
   background:transparent!important;
 }
+
+
+/* Perfil Padre Zezinho — lista limpa de repertório */
+.artist-clean-head{padding:34px 0 22px}
+.artist-clean-head h1{font-size:clamp(2.15rem,4vw,3.35rem);margin:10px 0 7px}
+.artist-clean-head p{color:var(--muted)}
+.artist-back{display:inline-flex;color:#7058ed;font-weight:800;font-size:.86rem}
+.artist-clean-panel{max-width:900px}
+.artist-search-wrap{position:relative;margin-bottom:18px}
+.artist-search-wrap>span{position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:20px;color:#8d94a1}
+.artist-search-wrap input{width:100%;height:48px;border:1px solid #dfe3e9;border-radius:10px;background:#fff;padding:0 16px 0 43px;outline:none;color:#151a24}
+.artist-search-wrap input:focus{border-color:#9a8cf3;box-shadow:0 0 0 4px #7058ed14}
+.artist-song-list{border-top:1px solid #e5e8ed}
+.artist-song-row{min-height:68px;display:flex;align-items:center;gap:13px;border-bottom:1px solid #e5e8ed;padding:10px 4px;transition:background .15s,padding .15s}
+.artist-song-row:hover{background:#f6f6f8;padding-left:9px;padding-right:9px}
+.artist-song-note{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:#f0f0f3;color:#565c68;font-size:16px;flex:0 0 34px}
+.artist-song-copy{min-width:0;flex:1;display:grid;gap:2px}
+.artist-song-copy strong{font-size:.92rem;color:var(--ink)}
+.artist-song-copy small{font-size:.72rem;color:var(--muted)}
+.artist-song-open{font-size:.77rem;font-weight:800;color:#7058ed;white-space:nowrap}
+.artist-song-open b{font-size:18px;margin-left:4px}
+.music-card-reference-art{width:78px;height:78px;border-radius:12px;flex:0 0 78px;display:grid;place-items:center;background:#eeeaf5;color:#7058ed;font-size:28px}
+.music-card-reference-art.padre-art{background:linear-gradient(145deg,#f1edf6,#e7e1ef);color:#6c567e}
+body.reading-theme-dark .artist-search-wrap input{background:#19171d!important;color:#fff!important;border-color:#45404a!important}
+body.reading-theme-dark .artist-song-list{border-color:#3a3540}
+body.reading-theme-dark .artist-song-row{border-color:#3a3540}
+body.reading-theme-dark .artist-song-row:hover{background:#211e26}
+body.reading-theme-dark .artist-song-note{background:#2c2830;color:#d8cfdf}
+body.reading-theme-dark .music-card-reference-art.padre-art{background:#2c2830;color:#d8cfdf}
+@media(max-width:620px){.artist-song-row{min-height:64px}.artist-song-open{font-size:0}.artist-song-open b{font-size:23px}}

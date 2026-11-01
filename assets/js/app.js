@@ -69,12 +69,66 @@ const facil49=facil49Source.trim().split('\n').map((row,index)=>{
  const [title,artist]=row.split('|');
  return {title,artist,genre:'49 Músicas Fáceis',collection:'49 Músicas Fáceis',coverIndex:index%9+1,sourceTitle:'49 músicas fáceis cifradas para violão',sourceUrl:'https://pt.slideshare.net/slideshow/49-msicas-fceis-cifradas-para-violo/60558564'};
 });
+const padreZezinhoSource=`Maria de Nazaré|E
+Te Amarei, Senhor|G
+Oração Pela Família|D
+Vocação|Am
+Um Coração Para Amar|G
+Nova Geração|Dm
+Utopia|F
+Água Viva|A
+Amar Como Jesus Amou|D#
+Confirmarei|Dm
+Ele me ungiu|G
+Minha Vida Tem Sentido|D
+Aconchego|A
+Águia Pequena|G
+Balada Por Um Reino|D
+Canção para meu Deus|G
+Despojamento|C
+Dizem Que É Saudade|G
+Estou pensando em Deus|E
+Há Um Barco Esquecido Na Praia|E
+Ilumina, Ilumina|A
+Juramento|F
+Mãe do Céu Morena|D
+Maria de Minha Infância|D
+Oração Por Meus Amigos|F
+Paz Inquieta|Em
+Por Um Pedaço de Pão|F
+Pra Que Eu Saiba Perdoar|A
+Quando Jesus Passar|D
+Rouxinol|A
+Eu Vim para Escutar|Dm
+A Nós Descei, Divina Luz|E
+Pelos Prados e Campinas|D
+A Barca|C
+À Senhora Aparecida|G
+Senhora e Rainha|C
+Alô, Meu Deus|D
+Cantar a Beleza da Vida|D
+Cântico de Simeão|C
+Cantiga de Matrimônio|A
+Cantiga por Francisco|A
+Canto de Maria ao Povo|E`;
+const padreZezinhoCatalog=padreZezinhoSource.trim().split('\n').map((row,index)=>{
+ const [title,key]=row.split('|');
+ return {title,artist:'Padre Zezinho',key:key||'—',genre:'Católica',collection:'Padre Zezinho',padreZezinho:true,sourceTitle:'Cifras de Padre Zezinho',sourceUrl:'https://decifrando.app.br/padre-zezinho',sourceIndex:index+1};
+});
 data.external??=[];
 const refExisting=new Map(data.external.map(item=>[normalize(item.title)+'|'+normalize(item.artist),item]));
-facil49.forEach(item=>{
+[...facil49,...padreZezinhoCatalog].forEach(item=>{
  const key=normalize(item.title)+'|'+normalize(item.artist),current=refExisting.get(key);
- if(current)Object.assign(current,{collection:item.collection,coverIndex:item.coverIndex,sourceTitle:item.sourceTitle,sourceUrl:item.sourceUrl});
- else {data.external.push(item);refExisting.set(key,item)}
+ if(current){
+  Object.assign(current,{
+   collection:item.padreZezinho?'Padre Zezinho':(current.collection||item.collection),
+   coverIndex:current.coverIndex||item.coverIndex,
+   sourceTitle:current.sourceTitle||item.sourceTitle,
+   sourceUrl:current.sourceUrl||item.sourceUrl,
+   key:current.key||item.key,
+   padreZezinho:current.padreZezinho||item.padreZezinho
+  });
+ } else {data.external.push(item);refExisting.set(key,item)}
 });
 
 const localArtistIndex=new Map();
@@ -85,25 +139,29 @@ data.artists.forEach(a=>localArtistIndex.set(normalize(a.name),a.id));
  if(!localArtistIndex.has(artistKey)){
   const artistId=`ref-artista-${refSlug(item.artist)}`;
   localArtistIndex.set(artistKey,artistId);
-  data.artists.push({id:artistId,name:item.artist,genre:item.genre,description:'Perfil do catálogo de referências. As cifras são adicionadas quando autorizadas.',photo:'assets/img/artista-referencia.svg',referenceOnly:true});
+  data.artists.push({id:artistId,name:item.artist,genre:item.genre,description:item.artist==='Padre Zezinho'?'Repertório católico de Padre Zezinho organizado na biblioteca do AcordeEDU.':'Perfil do catálogo de referências. As cifras são adicionadas quando autorizadas.',photo:'assets/img/artista-referencia.svg',referenceOnly:true});
  }
  item.artistId=localArtistIndex.get(artistKey);
 });
-const facil49LibrarySongs=(data.external||[]).filter(item=>item.collection==='49 Músicas Fáceis').map(item=>({
- id:'lib49-'+refSlug(item.title+'-'+item.artist),
+const referenceLibrarySongs=(data.external||[]).filter(item=>item.collection==='49 Músicas Fáceis'||item.collection==='Padre Zezinho').map(item=>({
+ id:(item.padreZezinho?'libpz-':'lib49-')+refSlug(item.title+'-'+item.artist),
  title:item.title,
  artistId:item.artistId,
- genre:'49 Músicas Fáceis',
+ genre:item.padreZezinho?'Católica':'49 Músicas Fáceis',
  year:2026,
- key:'—',
+ key:item.key||'—',
  level:'Cifra pendente',
  referenceOnly:true,
  referenceId:item.id,
- collection:'49 Músicas Fáceis',
- coverIndex:item.coverIndex
+ collection:item.collection,
+ coverIndex:item.coverIndex,
+ padreZezinho:!!item.padreZezinho
 }));
-const existingSongIds=new Set(data.songs.map(song=>song.id));
-facil49LibrarySongs.forEach(song=>{if(!existingSongIds.has(song.id)){data.songs.push(song);existingSongIds.add(song.id)}});
+const existingLibraryKeys=new Set(data.songs.map(song=>normalize(song.title)+'|'+normalize(artistBy(song.artistId).name)));
+referenceLibrarySongs.forEach(song=>{
+ const k=normalize(song.title)+'|'+normalize(artistBy(song.artistId).name);
+ if(!existingLibraryKeys.has(k)){data.songs.push(song);existingLibraryKeys.add(k)}
+});
 const knownSongs=()=>data.external||[];
 
 const $=(sel,root=document)=>root.querySelector(sel),$$=(sel,root=document)=>[...root.querySelectorAll(sel)];
@@ -148,7 +206,11 @@ function musicCard(song){
   const ref=knownSongs().find(item=>item.id===song.referenceId)||knownSongs().find(item=>normalize(item.title)===normalize(song.title)&&item.artistId===song.artistId);
   const href=ref?referenceHref(ref):link('musicas/');
   const idx=((Number(song.coverIndex)||1)-1)%9,x=(idx%3)*50,y=Math.floor(idx/3)*50;
-  return `<a class="music-card library-reference-card" href="${href}"><span class="music-card-cover-sprite" style="background-image:url('${link('assets/img/facil49-sprite.webp')}');background-size:300% 300%;background-position:${x}% ${y}%"></span><div class="card-detail"><h3>${esc(song.title)}</h3><p>${esc(artist.name)}</p><div class="music-meta"><span class="tag reference-pending">Cifra pendente</span><span>49 Músicas Fáceis</span></div></div><span class="arrow">↗</span></a>`;
+  const art=song.padreZezinho
+   ?`<span class="music-card-reference-art padre-art" aria-hidden="true">♫</span>`
+   :`<span class="music-card-cover-sprite" style="background-image:url('${link('assets/img/facil49-sprite.webp')}');background-size:300% 300%;background-position:${x}% ${y}%"></span>`;
+  const meta=song.padreZezinho?'Padre Zezinho · Católica':'49 Músicas Fáceis';
+  return `<a class="music-card library-reference-card" href="${href}">${art}<div class="card-detail"><h3>${esc(song.title)}</h3><p>${esc(artist.name)}</p><div class="music-meta"><span class="tag reference-pending">Cifra pendente</span><span>${meta}</span></div></div><span class="arrow">↗</span></a>`;
  }
  return `<a class="music-card" href="${link('musicas/cifra.html')}?id=${encodeURIComponent(song.id)}"><img loading="lazy" src="${imageUrl(song.cover||album?.cover||artist.photo)}" alt="Fotografia ilustrativa da música ${esc(song.title)}"><div class="card-detail"><h3>${esc(song.title)}</h3><p>${esc(artist.name)}</p><div class="music-meta"><span class="tag lime">${esc(song.key||'—')}</span><span>${esc(song.level||'Cifra')}</span></div></div><span class="arrow">↗</span></a>`;
 }
@@ -205,11 +267,29 @@ function songsPage(){let songs=allSongs();shell(`${heading('BIBLIOTECA DE MÚSIC
  const q=new URLSearchParams(location.search).get('q');filterBox(songs,'songs');filterBox(knownSongs(),'known','external');if(q){$('#songs-search').value=q;$('#songs-search').dispatchEvent(new Event('input'));$('#known-search').value=q;$('#known-search').dispatchEvent(new Event('input'))}
 
 function artistsPage(){shell(`${heading('ARTISTAS','Explore os artistas','Encontre artistas cadastrados e veja suas músicas, álbuns e cifras.')}${filterUI('artists',allArtists(),'Buscar artista...')}`);const params=new URLSearchParams(location.search),q=params.get('q'),letter=params.get('letter');if(q)$('#artists-search').value=q;if(letter)$('#artists-search').value=letter;filterBox(allArtists(),'artists','artists');if(letter){const available=allArtists().filter(a=>normalize(a.name).startsWith(normalize(letter)));$('#artists-results').innerHTML=available.length?`<div class="artist-grid">${available.map(artistCard).join('')}</div>`:`<div class="empty"><strong>Não há artistas com a letra ${esc(letter)} ainda.</strong><p><a class="text-link" href="${link('artistas/')}">Ver todos os artistas ↗</a></p></div>`;$('#count-results').textContent=`${available.length} resultado(s)`;} }
-function artistPage(){const id=new URLSearchParams(location.search).get('id');let artist=allArtists().find(a=>a.id===id);if(!artist){artistsPage();return}const alb=allAlbums().filter(x=>x.artistId===id),songs=allSongs().filter(x=>x.artistId===id),references=knownSongs().filter(x=>x.artistId===id);shell(`${heading('PERFIL DO ARTISTA',esc(artist.name),esc(artist.genre||''))}<div class="panel" style="display:flex;gap:20px;align-items:center;margin:5px 0 24px"><a href="${link('artistas/')}" aria-label="Voltar à lista de artistas"><img width="125" height="125" style="border-radius:18px;object-fit:cover" src="${imageUrl(artist.photo)}" alt="${artist.referenceOnly?'Ilustração do artista no catálogo':'Imagem ilustrativa do artista'}"></a><div><h2>${esc(artist.name)}</h2><p class="muted">${esc(artist.description||'Artista cadastrado na plataforma.')}</p><p class="muted tiny">${songs.length} cifra(s) publicada(s) · ${references.length} música(s) no catálogo · ${alb.length} álbum(ns)</p></div></div>
+function artistPage(){
+ const id=new URLSearchParams(location.search).get('id');
+ let artist=allArtists().find(a=>a.id===id);
+ if(!artist){artistsPage();return}
+ const alb=allAlbums().filter(x=>x.artistId===id),songs=allSongs().filter(x=>x.artistId===id),references=knownSongs().filter(x=>x.artistId===id);
+ const isPadre=normalize(artist.name)==='padre zezinho';
+ if(isPadre){
+  const merged=[...new Map([...songs.map(s=>[normalize(s.title),{type:'song',song:s,title:s.title,key:s.key||'—'}]),...references.map(r=>[normalize(r.title),{type:'ref',ref:r,title:r.title,key:r.key||'—'}])].map(([k,v])=>[k,v])).values()].sort((a,b)=>a.title.localeCompare(b.title,'pt-BR'));
+  const row=item=>{
+   const href=item.type==='song'&&!item.song.referenceOnly?`${link('musicas/cifra.html')}?id=${encodeURIComponent(item.song.id)}`:referenceHref(item.ref||knownSongs().find(r=>normalize(r.title)===normalize(item.title)&&r.artistId===artist.id));
+   return `<a class="artist-song-row" href="${href}"><span class="artist-song-note" aria-hidden="true">♫</span><span class="artist-song-copy"><strong>${esc(item.title)}</strong><small>${item.key&&item.key!=='—'?'Tom '+esc(item.key)+' · ':''}Padre Zezinho</small></span><span class="artist-song-open">Abrir <b>›</b></span></a>`;
+  };
+  shell(`<section class="artist-clean-head"><a class="artist-back" href="${link('artistas/')}">‹ Artistas</a><div><h1>Padre Zezinho</h1><p><strong>${merged.length} músicas</strong> cadastradas no AcordeEDU</p></div></section>
+  <section class="artist-clean-panel"><div class="artist-search-wrap"><span aria-hidden="true">⌕</span><input id="artistSongSearch" type="search" placeholder="Busque pela música..." aria-label="Buscar música de Padre Zezinho"></div><div class="artist-song-list" id="artistSongList">${merged.map(row).join('')}</div><div class="empty" id="artistSongEmpty" hidden>Nenhuma música encontrada.</div></section>`);
+  const input=$('#artistSongSearch'),list=$('#artistSongList'),empty=$('#artistSongEmpty');
+  input?.addEventListener('input',()=>{const q=normalize(input.value);let count=0;[...list.children].forEach(el=>{const show=normalize(el.textContent).includes(q);el.hidden=!show;if(show)count++});empty.hidden=count>0});
+  return;
+ }
+ shell(`${heading('PERFIL DO ARTISTA',esc(artist.name),esc(artist.genre||''))}<div class="panel" style="display:flex;gap:20px;align-items:center;margin:5px 0 24px"><a href="${link('artistas/')}" aria-label="Voltar à lista de artistas"><img width="125" height="125" style="border-radius:18px;object-fit:cover" src="${imageUrl(artist.photo)}" alt="${artist.referenceOnly?'Ilustração do artista no catálogo':'Imagem ilustrativa do artista'}"></a><div><h2>${esc(artist.name)}</h2><p class="muted">${esc(artist.description||'Artista cadastrado na plataforma.')}</p><p class="muted tiny">${songs.length} cifra(s) publicada(s) · ${references.length} música(s) no catálogo · ${alb.length} álbum(ns)</p></div></div>
  <section class="section" style="padding-top:15px"><div class="section-head"><h2>Cifras disponíveis</h2></div><div class="music-grid">${songs.map(musicCard).join('')||'<div class="empty">Nenhuma cifra publicada ainda.</div>'}</div></section>
  ${references.length?`<section class="section"><div class="section-head"><div><h2>Músicas conhecidas</h2><p>Veja as fichas de músicas deste artista dentro do Acorde Studio.</p></div></div><div class="reference-grid">${references.map(referenceCard).join('')}</div></section>`:''}
- <section class="section"><div class="section-head"><h2>Álbuns</h2></div><div class="album-grid">${alb.map(albumCard).join('')||'<div class="empty">Nenhum álbum cadastrado ainda.</div>'}</div></section>`)}
-
+ <section class="section"><div class="section-head"><h2>Álbuns</h2></div><div class="album-grid">${alb.map(albumCard).join('')||'<div class="empty">Nenhum álbum cadastrado ainda.</div>'}</div></section>`);
+}
 function galleryPage(){shell(`${heading('ACERVO VISUAL','A música também se vê','Uma galeria organizada por álbuns, artistas e músicas, com fotografias ilustrativas locais nos exemplos.')}<div class="soft-panel"><div><h2>Escolha como explorar.</h2><p>As capas e retratos são imagens ilustrativas criadas para a demonstração; substitua por capas oficiais autorizadas em assets/img se necessário.</p></div><div class="song-buttons"><a class="btn btn-primary" href="${link('gallery/albuns/')}">Ver álbuns</a><a class="btn btn-light" href="${link('gallery/musicas/')}">Ver músicas</a></div></div><section class="section"><div class="section-head"><h2>Álbuns em destaque</h2><a class="text-link" href="${link('gallery/albuns/')}">Todos ↗</a></div><div class="album-grid">${allAlbums().map(albumCard).join('')}</div></section>`)}
 function albumsPage(){
  const id=new URLSearchParams(location.search).get('id');
@@ -235,7 +315,7 @@ function referencePage(){
  const id=new URLSearchParams(location.search).get('id');
  const item=knownSongs().find(x=>x.id===id);
  if(!item){shell(`${heading('CATÁLOGO','Música não encontrada','Volte ao catálogo para procurar outra música.')}<a class="btn btn-primary" href="${link('gallery/musicas/')}">Ver músicas ↗</a>`);return}
- const published=allSongs().find(s=>normalize(s.title)===normalize(item.title)&&normalize(artistBy(s.artistId).name)===normalize(item.artist));
+ const published=allSongs().find(s=>!s.referenceOnly&&(s.originalLayout?.length||s.sections?.length)&&normalize(s.title)===normalize(item.title)&&normalize(artistBy(s.artistId).name)===normalize(item.artist));
  const artistHref=`${link('artistas/perfil.html')}?id=${encodeURIComponent(item.artistId)}`;
  const sendHref=`${link('enviar/')}?title=${encodeURIComponent(item.title)}&artist=${encodeURIComponent(item.artist)}&genre=${encodeURIComponent(item.genre||'')}`;
  shell(`${heading('CATÁLOGO DE MÚSICAS',esc(item.title),'Ficha da música dentro do Acorde Studio.')}
