@@ -214,3 +214,13 @@ body h1,body h2,body h3{font-family:'DM Sans',Arial,sans-serif;letter-spacing:-.
 .cifra-body.cifra-theme-dark .chord-at,
 .cifra-body.cifra-theme-dark .original-chords,
 .cifra-body.cifra-theme-dark .inline-chord{color:#5200FF!important;text-shadow:0 0 12px #8b52ff!important}
+
+
+/* Acordes sempre em negrito */
+.cifra-chord,
+.original-chords,
+.original-chords .chord-at,
+.original-lyric .inline-chord,
+.inline-chord{
+  font-weight:900!important;
+}
