@@ -444,3 +444,22 @@ body.reading-theme-dark .cifra-body.cifra-theme-dark{
   background:#252129!important;
   border-color:#49424e!important;
 }
+
+
+/* 49 Músicas Fáceis dentro da biblioteca principal */
+.music-card-cover-sprite{
+  width:78px;
+  height:78px;
+  border-radius:12px;
+  flex-shrink:0;
+  background-repeat:no-repeat;
+  display:block;
+}
+.tag.reference-pending{
+  background:#f4e8ff;
+  color:#6a2a9b;
+}
+body.reading-theme-dark .tag.reference-pending{
+  background:#3d2949!important;
+  color:#f0b7ff!important;
+}

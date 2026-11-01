@@ -89,6 +89,21 @@ data.artists.forEach(a=>localArtistIndex.set(normalize(a.name),a.id));
  }
  item.artistId=localArtistIndex.get(artistKey);
 });
+const facil49LibrarySongs=(data.external||[]).filter(item=>item.collection==='49 Músicas Fáceis').map(item=>({
+ id:'lib49-'+refSlug(item.title+'-'+item.artist),
+ title:item.title,
+ artistId:item.artistId,
+ genre:'49 Músicas Fáceis',
+ year:2026,
+ key:'—',
+ level:'Cifra pendente',
+ referenceOnly:true,
+ referenceId:item.id,
+ collection:'49 Músicas Fáceis',
+ coverIndex:item.coverIndex
+}));
+const existingSongIds=new Set(data.songs.map(song=>song.id));
+facil49LibrarySongs.forEach(song=>{if(!existingSongIds.has(song.id)){data.songs.push(song);existingSongIds.add(song.id)}});
 const knownSongs=()=>data.external||[];
 
 const $=(sel,root=document)=>root.querySelector(sel),$$=(sel,root=document)=>[...root.querySelectorAll(sel)];
@@ -127,7 +142,16 @@ function shell(content){
  $('#menuButton').onclick=()=>{const menu=$('#mobileMenu');menu.classList.toggle('hidden');$('#menuButton').setAttribute('aria-expanded',String(!menu.classList.contains('hidden')))};
 }
 const heading=(label,title,description)=>`<div class="page-top"><span class="eyebrow">${esc(label)}</span><h1>${title}</h1><p>${description}</p></div>`;
-function musicCard(song){const artist=artistBy(song.artistId),album=albumBy(song.albumId);return `<a class="music-card" href="${link('musicas/cifra.html')}?id=${encodeURIComponent(song.id)}"><img loading="lazy" src="${imageUrl(song.cover||album?.cover||artist.photo)}" alt="Fotografia ilustrativa da música ${esc(song.title)}"><div class="card-detail"><h3>${esc(song.title)}</h3><p>${esc(artist.name)}</p><div class="music-meta"><span class="tag lime">${esc(song.key||'—')}</span><span>${esc(song.level||'Cifra')}</span></div></div><span class="arrow">↗</span></a>`}
+function musicCard(song){
+ const artist=artistBy(song.artistId),album=albumBy(song.albumId);
+ if(song.referenceOnly){
+  const ref=knownSongs().find(item=>item.id===song.referenceId)||knownSongs().find(item=>normalize(item.title)===normalize(song.title)&&item.artistId===song.artistId);
+  const href=ref?referenceHref(ref):link('musicas/');
+  const idx=((Number(song.coverIndex)||1)-1)%9,x=(idx%3)*50,y=Math.floor(idx/3)*50;
+  return `<a class="music-card library-reference-card" href="${href}"><span class="music-card-cover-sprite" style="background-image:url('${link('assets/img/facil49-sprite.webp')}');background-size:300% 300%;background-position:${x}% ${y}%"></span><div class="card-detail"><h3>${esc(song.title)}</h3><p>${esc(artist.name)}</p><div class="music-meta"><span class="tag reference-pending">Cifra pendente</span><span>49 Músicas Fáceis</span></div></div><span class="arrow">↗</span></a>`;
+ }
+ return `<a class="music-card" href="${link('musicas/cifra.html')}?id=${encodeURIComponent(song.id)}"><img loading="lazy" src="${imageUrl(song.cover||album?.cover||artist.photo)}" alt="Fotografia ilustrativa da música ${esc(song.title)}"><div class="card-detail"><h3>${esc(song.title)}</h3><p>${esc(artist.name)}</p><div class="music-meta"><span class="tag lime">${esc(song.key||'—')}</span><span>${esc(song.level||'Cifra')}</span></div></div><span class="arrow">↗</span></a>`;
+}
 function albumCard(album){const artist=artistBy(album.artistId);return `<a class="album-card" href="${link('gallery/albuns/')}?id=${encodeURIComponent(album.id)}"><img loading="lazy" src="${imageUrl(album.cover)}" alt="Fotografia ilustrativa do álbum ${esc(album.title)}"><h3>${esc(album.title)}</h3><p>${esc(artist.name)} · ${esc(album.year||'')}</p></a>`}
 function artistCard(artist){return `<a class="artist-card" href="${link('artistas/perfil.html')}?id=${encodeURIComponent(artist.id)}"><img loading="lazy" src="${imageUrl(artist.photo)}" alt="Retrato ilustrativo de ${esc(artist.name)}"><div><h3>${esc(artist.name)}</h3><p>${esc(artist.genre||'Artista')}</p></div></a>`}
 function referenceHref(item){return `${link('musicas/referencia.html')}?id=${encodeURIComponent(item.id)}`}
@@ -175,11 +199,10 @@ function home(){
  const updateProgress=()=>{const distance=viewport.scrollWidth-viewport.clientWidth;const ratio=distance>0?viewport.scrollLeft/distance:0;progress.style.transform=`translateX(${Math.min(100,Math.max(0,ratio*100))}%)`;prev.setAttribute('aria-disabled',String(viewport.scrollLeft<=3));next.setAttribute('aria-disabled',String(viewport.scrollLeft>=distance-3))};
  viewport.addEventListener('scroll',updateProgress,{passive:true});window.addEventListener('resize',updateProgress);updateProgress();
 }
-function songsPage(){let songs=allSongs(),facilRefs=knownSongs().filter(item=>item.collection==='49 Músicas Fáceis');shell(`${heading('CATÁLOGO DE CIFRAS','Encontre sua próxima música','Busque por música, artista ou estilo. Todas as páginas abrem dentro do AcordeEDU.')}
- ${facilRefs.length?`<section class="section" style="padding-top:8px"><div class="section-head"><div><span class="eyebrow">COLEÇÃO DE REFERÊNCIA</span><h2>49 Músicas Fáceis</h2><p>Títulos e artistas organizados a partir da fonte indicada, com capas originais do AcordeEDU.</p></div></div><div class="reference-grid">${facilRefs.map(referenceCard).join('')}</div></section>`:''}
- <section class="section" style="padding-top:8px"><div class="section-head"><h2>Cifras disponíveis</h2></div>${filterUI('songs',songs)}</section>
+function songsPage(){let songs=allSongs();shell(`${heading('BIBLIOTECA DE MÚSICAS','Encontre sua próxima música','Busque por música, artista ou estilo. Músicas sem cifra completa aparecem identificadas como cifra pendente.')}
+ <section class="section" style="padding-top:8px"><div class="section-head"><div><h2>Biblioteca de músicas</h2><p>${songs.length} músicas cadastradas, incluindo a coleção 49 Músicas Fáceis.</p></div></div>${filterUI('songs',songs)}</section>
  <section class="section"><div class="section-head"><div><span class="eyebrow">CATÁLOGO DO ACORDE STUDIO</span><h2>Músicas conhecidas</h2><p>Explore músicas e artistas sem sair do site. Os itens ainda sem cifra mostram uma ficha para cadastramento.</p></div></div>${filterUI('known',knownSongs(),'Pesquisar músicas conhecidas...')}</section>`);
- const q=new URLSearchParams(location.search).get('q');if(q){$('#songs-search').value=q;$('#known-search').value=q};filterBox(songs,'songs');filterBox(knownSongs(),'known','external')}
+ const q=new URLSearchParams(location.search).get('q');filterBox(songs,'songs');filterBox(knownSongs(),'known','external');if(q){$('#songs-search').value=q;$('#songs-search').dispatchEvent(new Event('input'));$('#known-search').value=q;$('#known-search').dispatchEvent(new Event('input'))}
 
 function artistsPage(){shell(`${heading('ARTISTAS','Explore os artistas','Encontre artistas cadastrados e veja suas músicas, álbuns e cifras.')}${filterUI('artists',allArtists(),'Buscar artista...')}`);const params=new URLSearchParams(location.search),q=params.get('q'),letter=params.get('letter');if(q)$('#artists-search').value=q;if(letter)$('#artists-search').value=letter;filterBox(allArtists(),'artists','artists');if(letter){const available=allArtists().filter(a=>normalize(a.name).startsWith(normalize(letter)));$('#artists-results').innerHTML=available.length?`<div class="artist-grid">${available.map(artistCard).join('')}</div>`:`<div class="empty"><strong>Não há artistas com a letra ${esc(letter)} ainda.</strong><p><a class="text-link" href="${link('artistas/')}">Ver todos os artistas ↗</a></p></div>`;$('#count-results').textContent=`${available.length} resultado(s)`;} }
 function artistPage(){const id=new URLSearchParams(location.search).get('id');let artist=allArtists().find(a=>a.id===id);if(!artist){artistsPage();return}const alb=allAlbums().filter(x=>x.artistId===id),songs=allSongs().filter(x=>x.artistId===id),references=knownSongs().filter(x=>x.artistId===id);shell(`${heading('PERFIL DO ARTISTA',esc(artist.name),esc(artist.genre||''))}<div class="panel" style="display:flex;gap:20px;align-items:center;margin:5px 0 24px"><a href="${link('artistas/')}" aria-label="Voltar à lista de artistas"><img width="125" height="125" style="border-radius:18px;object-fit:cover" src="${imageUrl(artist.photo)}" alt="${artist.referenceOnly?'Ilustração do artista no catálogo':'Imagem ilustrativa do artista'}"></a><div><h2>${esc(artist.name)}</h2><p class="muted">${esc(artist.description||'Artista cadastrado na plataforma.')}</p><p class="muted tiny">${songs.length} cifra(s) publicada(s) · ${references.length} música(s) no catálogo · ${alb.length} álbum(ns)</p></div></div>
