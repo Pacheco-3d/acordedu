@@ -23,10 +23,22 @@ jobs:
         uses: actions/configure-pages@v5
         with:
           enablement: true
-      - name: Preparar conteúdo
+      - name: Preparar site completo
+        shell: bash
+        run: |
+          mkdir -p _site
+          if [ -f acordeedu-site.zip ]; then
+            unzip -q acordeedu-site.zip -d _site
+          else
+            cp index.html _site/
+            cp -a assets _site/
+            touch _site/.nojekyll
+          fi
+          test -f _site/index.html
+      - name: Enviar arquivos para o Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
       - name: Publicar
         id: deployment
         uses: actions/deploy-pages@v4
