@@ -13,6 +13,67 @@ const normalize=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
 // As referencias de musicas comerciais navegam apenas dentro deste site.
 // Catalogo de metadados: o conteudo integral da cifra depende de cadastro autorizado.
 const refSlug=text=>normalize(text).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'sem-nome';
+const facil49Source=`Flores|Titãs
+La Bella Luna|Paralamas do Sucesso
+Que País é Esse?|Legião Urbana
+Garota Nacional|Skank
+É Proibido Fumar|Skank
+Era um Garoto|Engenheiros do Hawaii
+Aluga-se|Raul Seixas
+Ciúme|Ultraje a Rigor
+O Descobridor dos Sete Mares|Tim Maia
+Por Você|Frejat
+Lanterna dos Afogados|Paralamas do Sucesso
+Diz Pra Mim|Banda Malta
+Como Zaqueu|Regis Danese
+Majestade o Sabiá|Jair Rodrigues
+Eu Sei|Legião Urbana
+Memórias|Banda Malta
+Os Cegos do Castelo|Titãs
+Parabéns Pra Você|Tradicional
+De Janeiro a Janeiro|Roberta Campos e Nando Reis
+Catedral|Zélia Duncan
+Lenha|Rio Negro e Solimões
+Tempos Modernos|Lulu Santos
+Domingo de Manhã|Marcos e Belutti
+Ovelha Negra|Rita Lee
+Fácil|Jota Quest
+Fugidinha|Michel Teló
+Vida Vazia|Bruno e Marrone
+Como Eu Quero|Kid Abelha
+Burguesinha|Seu Jorge
+Meu Erro|Paralamas do Sucesso
+Meteoro|Luan Santana
+O Segundo Sol|Nando Reis
+Fico Assim Sem Você|Adriana Calcanhotto
+Poeira|Ivete Sangalo
+Só Hoje|Jota Quest
+Primeiros Erros|Capital Inicial
+Hoje a Noite Não Tem Luar|Legião Urbana
+O Sol|Jota Quest
+Maluco Beleza|Raul Seixas
+Gostava Tanto de Você|Tim Maia
+Velha Infância|Tribalistas
+É Preciso Saber Viver|Titãs
+Onde Você Mora?|Cidade Negra
+Será|Legião Urbana
+Camaro Amarelo|Munhoz e Mariano
+Vamos Fugir|Skank
+Devolva-me|Adriana Calcanhotto
+Só os Loucos Sabem|Charlie Brown Jr
+Paga Pau|Fernando e Sorocaba`;
+const facil49=facil49Source.trim().split('\n').map((row,index)=>{
+ const [title,artist]=row.split('|');
+ return {title,artist,genre:'49 Músicas Fáceis',collection:'49 Músicas Fáceis',coverIndex:index%9+1,sourceTitle:'49 músicas fáceis cifradas para violão',sourceUrl:'https://pt.slideshare.net/slideshow/49-msicas-fceis-cifradas-para-violo/60558564'};
+});
+data.external??=[];
+const refExisting=new Map(data.external.map(item=>[normalize(item.title)+'|'+normalize(item.artist),item]));
+facil49.forEach(item=>{
+ const key=normalize(item.title)+'|'+normalize(item.artist),current=refExisting.get(key);
+ if(current)Object.assign(current,{collection:item.collection,coverIndex:item.coverIndex,sourceTitle:item.sourceTitle,sourceUrl:item.sourceUrl});
+ else {data.external.push(item);refExisting.set(key,item)}
+});
+
 const localArtistIndex=new Map();
 data.artists.forEach(a=>localArtistIndex.set(normalize(a.name),a.id));
 (data.external||[]).forEach((item,index)=>{
@@ -67,7 +128,13 @@ function musicCard(song){const artist=artistBy(song.artistId),album=albumBy(song
 function albumCard(album){const artist=artistBy(album.artistId);return `<a class="album-card" href="${link('gallery/albuns/')}?id=${encodeURIComponent(album.id)}"><img loading="lazy" src="${imageUrl(album.cover)}" alt="Fotografia ilustrativa do álbum ${esc(album.title)}"><h3>${esc(album.title)}</h3><p>${esc(artist.name)} · ${esc(album.year||'')}</p></a>`}
 function artistCard(artist){return `<a class="artist-card" href="${link('artistas/perfil.html')}?id=${encodeURIComponent(artist.id)}"><img loading="lazy" src="${imageUrl(artist.photo)}" alt="Retrato ilustrativo de ${esc(artist.name)}"><div><h3>${esc(artist.name)}</h3><p>${esc(artist.genre||'Artista')}</p></div></a>`}
 function referenceHref(item){return `${link('musicas/referencia.html')}?id=${encodeURIComponent(item.id)}`}
-function referenceCard(item){return `<a class="reference-card" href="${referenceHref(item)}"><span class="reference-cover" aria-hidden="true">♫</span><span class="reference-info"><strong>${esc(item.title)}</strong><small>${esc(item.artist)}</small><span class="reference-tag">${esc(item.genre||'Música')} · Ver detalhes</span></span><span class="reference-go" aria-hidden="true">↗</span></a>`}
+function referenceCover(item,large=false){
+ const cls=large?'reference-large-art':'reference-cover';
+ if(!item.coverIndex)return `<span class="${cls}" aria-hidden="true">♫</span>`;
+ const idx=(Number(item.coverIndex)-1)%9,x=(idx%3)*50,y=Math.floor(idx/3)*50;
+ return `<span class="${cls}" aria-hidden="true" style="background-image:url('${link('assets/img/facil49-sprite.webp')}');background-size:300% 300%;background-position:${x}% ${y}%;background-repeat:no-repeat;color:transparent"></span>`;
+}
+function referenceCard(item){return `<a class="reference-card" href="${referenceHref(item)}">${referenceCover(item)}<span class="reference-info"><strong>${esc(item.title)}</strong><small>${esc(item.artist)}</small><span class="reference-tag">${esc(item.collection||item.genre||'Música')} · Ver detalhes</span></span><span class="reference-go" aria-hidden="true">↗</span></a>`}
 function externalRow(item){return `<div class="source-row"><a class="record-song-link" href="${referenceHref(item)}"><strong>${esc(item.title)}</strong><small>${esc(item.genre||'Música')} · Ver música aqui ↗</small></a><a class="record-artist-link" href="${link('artistas/perfil.html')}?id=${encodeURIComponent(item.artistId)}" aria-label="Abrir artista ${esc(item.artist)}">${esc(item.artist)} ↗</a></div>`}
 
 function filterBox(items,rootId,type='songs'){const input=$(`#${rootId}-search`),genre=$(`#${rootId}-genre`),results=$(`#${rootId}-results`);if(!input||!results)return;const act=()=>{let key=normalize(input.value),g=genre?.value||'';let found=items.filter(x=>normalize(type==='artists'?`${x.name} ${x.genre}`:`${x.title} ${x.genre} ${x.artist||artistBy(x.artistId).name}`).includes(key)&&(!g||x.genre===g));results.innerHTML=found.length?(type==='artists'?`<div class="artist-grid">${found.map(artistCard).join('')}</div>`:type==='external'?`<div class="panel">${found.map(externalRow).join('')}</div>`:`<div class="music-grid">${found.map(musicCard).join('')}</div>`):`<div class="empty"><strong>Nenhum resultado encontrado.</strong>Tente outro título, artista ou estilo.</div>`;$('#count-results')?.replaceChildren(document.createTextNode(`${found.length} resultado(s)`))};input.addEventListener('input',act);genre?.addEventListener('change',act);act()}
@@ -75,6 +142,7 @@ function genres(items){return [...new Set(items.map(x=>x.genre).filter(Boolean))
 const filterUI=(id,items,placeholder='Buscar músicas ou artistas...')=>`<div class="toolbar"><input id="${id}-search" class="input search-field" type="search" placeholder="${esc(placeholder)}" aria-label="Pesquisar"><select id="${id}-genre" class="select" aria-label="Filtrar por gênero"><option value="">Todos os estilos</option>${genres(items).map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join('')}</select><span class="muted tiny" id="count-results"></span></div><div id="${id}-results"></div>`;
 function home(){
  const known=knownSongs();
+ const facilRefs=known.filter(item=>item.collection==='49 Músicas Fáceis');
  const ready=allSongs().filter(song=>(song.originalLayout?.length||song.sections?.length));
  const imported=ready.filter(song=>song.genre==='Sertanejo'||song.genre==='Pop Rock');
  const ranked=(imported.length?imported:ready).slice(0,8);
@@ -92,6 +160,7 @@ function home(){
  <section class="edu-az edu-block"><div class="edu-heading"><h2><span class="edu-heading-icon">♙</span> Artistas de A a Z</h2></div><nav class="edu-letters" aria-label="Artistas por letra">${letters.map(l=>`<a href="${link('artistas/')}?letter=${l}">${l}</a>`).join('')}<a href="${link('artistas/')}">#</a></nav></section>
  <div class="edu-bottom"><section class="edu-block"><div class="edu-heading"><h2><span class="edu-heading-icon">▱</span> Estilos Musicais</h2><a href="${link('musicas/')}">Ver cifras ›</a></div><div class="edu-styles">${styles.map(([name,filter],i)=>`<a href="${name==='Católica'?link('categorias/catolica/'):link('musicas/')+'?q='+encodeURIComponent(filter)}" class="edu-style"><img src="${localImg('estilo-'+String(i+1).padStart(2,'0')+'.webp')}" alt="Ilustração do estilo ${name}" loading="lazy"><span>${name}</span></a>`).join('')}</div></section>
  <section class="edu-block"><div class="edu-heading"><h2><span class="edu-heading-icon">⚒</span> Ferramentas</h2></div><div class="edu-tools">${[['♩','Afinador'],['♟','Metrônomo'],['▦','Dicionário de Acordes'],['⇅','Transpor Tom']].map(([symbol,name],i)=>`<a href="${i===3?link('musicas/'):i===2?link('dicionario/'):link('ferramentas/')}" class="edu-tool"><span aria-hidden="true">${symbol}</span><strong>${name}</strong></a>`).join('')}</div></section></div>
+ <section class="edu-block"><div class="edu-heading"><h2><span class="edu-heading-icon">♫</span> 49 Músicas Fáceis</h2><a href="${link('musicas/')}?q=${encodeURIComponent('49 Músicas Fáceis')}">Ver coleção ›</a></div><p>Referências de repertório para violão, com capas originais do AcordeEDU. As cifras completas entram quando houver uma versão autorizada.</p><div class="reference-grid">${facilRefs.slice(0,8).map(referenceCard).join('')}</div></section>
  <section class="edu-catholic-line edu-block"><div class="edu-heading"><h2><span class="edu-heading-icon">✝</span> Músicas Católicas</h2><a href="${link('categorias/catolica/')}">Ver todas as ${cat.songs.length} músicas ›</a></div><p>Cifras importadas do seu acervo, com transposição e documento original.</p><div class="edu-catholic-grid">${cat.songs.filter(s=>s.chordCount>0).slice(0,6).map(musicCard).join('')}</div></section>
  <section class="edu-catholic-line edu-block"><div class="edu-heading"><h2>Sertanejo</h2><a href="${link('musicas/')}?q=Sertanejo">Ver cifras ›</a></div><div class="edu-catholic-grid">${importados.songs.filter(x=>x.genre==='Sertanejo').slice(0,6).map(musicCard).join('')}</div></section><section class="edu-catholic-line edu-block"><div class="edu-heading"><h2>Pop Rock</h2><a href="${link('musicas/')}?q=Pop%20Rock">Ver cifras ›</a></div><div class="edu-catholic-grid">${importados.songs.filter(x=>x.genre==='Pop Rock').slice(0,6).map(musicCard).join('')}</div></section><section class="edu-block edu-submit-line"><p>Sentiu falta de uma música? Colabore com o catálogo enviando uma cifra para revisão.</p><a href="${link('enviar/')}" class="edu-submit-button">Enviar cifra ›</a></section>
  </div>`);
@@ -103,7 +172,8 @@ function home(){
  const updateProgress=()=>{const distance=viewport.scrollWidth-viewport.clientWidth;const ratio=distance>0?viewport.scrollLeft/distance:0;progress.style.transform=`translateX(${Math.min(100,Math.max(0,ratio*100))}%)`;prev.setAttribute('aria-disabled',String(viewport.scrollLeft<=3));next.setAttribute('aria-disabled',String(viewport.scrollLeft>=distance-3))};
  viewport.addEventListener('scroll',updateProgress,{passive:true});window.addEventListener('resize',updateProgress);updateProgress();
 }
-function songsPage(){let songs=allSongs();shell(`${heading('CATÁLOGO DE CIFRAS','Encontre sua próxima música','Busque por música, artista ou estilo. Todas as páginas abrem dentro do Acorde Studio.')}
+function songsPage(){let songs=allSongs(),facilRefs=knownSongs().filter(item=>item.collection==='49 Músicas Fáceis');shell(`${heading('CATÁLOGO DE CIFRAS','Encontre sua próxima música','Busque por música, artista ou estilo. Todas as páginas abrem dentro do AcordeEDU.')}
+ ${facilRefs.length?`<section class="section" style="padding-top:8px"><div class="section-head"><div><span class="eyebrow">COLEÇÃO DE REFERÊNCIA</span><h2>49 Músicas Fáceis</h2><p>Títulos e artistas organizados a partir da fonte indicada, com capas originais do AcordeEDU.</p></div></div><div class="reference-grid">${facilRefs.map(referenceCard).join('')}</div></section>`:''}
  <section class="section" style="padding-top:8px"><div class="section-head"><h2>Cifras disponíveis</h2></div>${filterUI('songs',songs)}</section>
  <section class="section"><div class="section-head"><div><span class="eyebrow">CATÁLOGO DO ACORDE STUDIO</span><h2>Músicas conhecidas</h2><p>Explore músicas e artistas sem sair do site. Os itens ainda sem cifra mostram uma ficha para cadastramento.</p></div></div>${filterUI('known',knownSongs(),'Pesquisar músicas conhecidas...')}</section>`);
  const q=new URLSearchParams(location.search).get('q');if(q){$('#songs-search').value=q;$('#known-search').value=q};filterBox(songs,'songs');filterBox(knownSongs(),'known','external')}
@@ -143,9 +213,9 @@ function referencePage(){
  const artistHref=`${link('artistas/perfil.html')}?id=${encodeURIComponent(item.artistId)}`;
  const sendHref=`${link('enviar/')}?title=${encodeURIComponent(item.title)}&artist=${encodeURIComponent(item.artist)}&genre=${encodeURIComponent(item.genre||'')}`;
  shell(`${heading('CATÁLOGO DE MÚSICAS',esc(item.title),'Ficha da música dentro do Acorde Studio.')}
- <div class="reference-detail-layout"><div class="panel reference-detail"><div class="reference-detail-heading"><div class="reference-large-art">♫</div><div><span class="eyebrow">MÚSICA NO CATÁLOGO</span><h2>${esc(item.title)}</h2><p><a class="text-link" href="${artistHref}">${esc(item.artist)} ↗</a></p><span class="tag lime">${esc(item.genre||'Música')}</span></div></div>
+ <div class="reference-detail-layout"><div class="panel reference-detail"><div class="reference-detail-heading">${referenceCover(item,true)}<div><span class="eyebrow">MÚSICA NO CATÁLOGO</span><h2>${esc(item.title)}</h2><p><a class="text-link" href="${artistHref}">${esc(item.artist)} ↗</a></p><span class="tag lime">${esc(item.genre||'Música')}</span></div></div>
  ${published?`<div class="reference-status"><h3>Esta cifra já está disponível</h3><p>Abra a versão completa com acordes e transposição.</p><a class="btn btn-primary" href="${link('musicas/cifra.html')}?id=${encodeURIComponent(published.id)}">Abrir cifra ↗</a></div>`:`<div class="reference-status"><h3>Cifra ainda não cadastrada</h3><p>O título e o artista fazem parte do catálogo, mas ainda não recebemos uma letra/cifra autorizada para publicar. Você pode enviar uma versão para revisão.</p><a class="btn btn-primary" href="${sendHref}">Enviar cifra para aprovação ↗</a></div>`}
- </div><aside class="stack"><div class="panel"><h3 class="side-title">Informações</h3><div class="mini-stat"><span>Artista</span><a class="text-link" href="${artistHref}">${esc(item.artist)} ↗</a></div><div class="mini-stat"><span>Gênero</span><strong>${esc(item.genre||'—')}</strong></div><div class="mini-stat"><span>Localização</span><strong>Acorde Studio</strong></div></div><a class="btn btn-light" href="${link('gallery/musicas/')}">← Voltar à galeria</a></aside></div>`);
+ </div><aside class="stack"><div class="panel"><h3 class="side-title">Informações</h3><div class="mini-stat"><span>Artista</span><a class="text-link" href="${artistHref}">${esc(item.artist)} ↗</a></div><div class="mini-stat"><span>Gênero</span><strong>${esc(item.genre||'—')}</strong></div><div class="mini-stat"><span>Coleção</span><strong>${esc(item.collection||'Catálogo geral')}</strong></div><div class="mini-stat"><span>Localização</span><strong>AcordeEDU</strong></div></div>${item.sourceUrl?`<a class="btn btn-light" href="${esc(item.sourceUrl)}" target="_blank" rel="noopener noreferrer">Ver fonte de referência ↗</a>`:''}<a class="btn btn-light" href="${link('gallery/musicas/')}">← Voltar à galeria</a></aside></div>`);
 }
 
 function renderChordLines(song,steps){
