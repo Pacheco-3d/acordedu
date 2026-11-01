@@ -82,7 +82,7 @@
     <section class="dict-hero" id="inicio">
       <span class="dict-eyebrow">Ferramentas musicais • violão</span>
       <h1>Dicionário de <span style="color:#ffce46">Acordes</span></h1>
-      <p>Consulte as posições dos acordes, pesquise por nome e explore os diagramas com uma rolagem contínua. Cada desenho representa as seis cordas do violão, da mais grave para a mais aguda.</p>
+      <p>Explore as 28 famílias de acordes, 336 diagramas e inversões do seu guia original AcordeEDU. Pesquise, navegue por família e aprenda com rolagem contínua.</p>
     </section>
     <section class="dict-notes" aria-label="Como interpretar os diagramas">
       <div class="dict-tip"><strong>● Casa pressionada</strong><span>O ponto indica onde posicionar os dedos no braço do violão.</span></div>
@@ -96,7 +96,7 @@
           <option value="all">Todos os tipos</option>
           <option value="major">Maiores</option>
           <option value="minor">Menores</option>
-          <option value="seventh">Com sétima</option>
+          <option value="seventh">Com sétima</option><option value="inversions">Inversões</option>
         </select>
         <span id="dict-count" class="dict-result" aria-live="polite"></span>
       </div>
@@ -104,50 +104,75 @@
         <a href="#nota-C">C</a><a href="#nota-D">D</a><a href="#nota-E">E</a><a href="#nota-F">F</a><a href="#nota-G">G</a><a href="#nota-A">A</a><a href="#nota-B">B</a>
       </nav>
     </div>
-    <div id="dict-content"><p>Carregando os diagramas...</p></div>
+    <section id="como-ler" class="dict-section"><h2>Como ler os diagramas</h2><p>Leia as cordas da esquerda (Mi grave) para a direita (Mi agudo). A posição indica as casas pressionadas, não a numeração dos dedos. O número ao lado mostra a casa inicial do desenho.</p><div class="dict-tip"><strong>Mapa das notas e formação dos acordes</strong><span>Na afinação padrão E – A – D – G – B – e, as notas se repetem a cada 12 casas. Fórmulas básicas: maior = 1 • 3 • 5; menor = 1 • ♭3 • 5. Altere uma nota para mudar a sonoridade.</span></div></section>
+    <div id="dict-content"><p>Carregando 384 posições do Dicionário AcordeEDU...</p></div>
+    <section class="dict-section" id="pratica"><h2>Progressões para praticar</h2><p>Exercícios organizados conforme o guia original.</p><div class="dict-grid">
+    <article class="dict-tip"><strong>Pop / folk</strong><span>C → G → Am → F</span></article>
+    <article class="dict-tip"><strong>Cadência ii–V–I</strong><span>Dm7 → G7 → C7M</span></article>
+    <article class="dict-tip"><strong>Tonalidade menor</strong><span>Am → Dm → E7 → Am</span></article>
+    <article class="dict-tip"><strong>Acordes com tensões</strong><span>Dm7(9) → G7(13) → C7M(9)</span></article>
+    </div></section>
+    <section class="dict-section" id="rotina"><h2>Plano de estudo • 15 minutos</h2><p>3 minutos revisando diagramas, 4 minutos de mão esquerda, 4 minutos de ritmo e 4 minutos aplicando acordes em músicas. Comece em andamento lento e aumente gradualmente.</p></section>
   </main>
   <button class="dict-back" aria-label="Voltar ao topo" title="Voltar ao topo" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
   <footer class="dict-footer">Dicionário de Acordes • <a href="../index.html">AcordeEDU</a> — Consulte as posições e pratique no seu ritmo.</footer>
   <script src="../assets/js/importadas.js"></script>
   <script src="../assets/js/chords.js"></script>
+  <script src="../assets/js/dicionario-pdf.js"></script>
   <script>
   (function(){
-    const engine=window.AcordeChords;
-    const target=document.getElementById('dict-content');
+    const resource=window.ACORDE_PDF_DICTIONARY;
+    const root=document.getElementById('dict-content');
     const search=document.getElementById('dict-search');
     const kind=document.getElementById('dict-type');
     const count=document.getElementById('dict-count');
-    const notes=['C','D','E','F','G','A','B'];
-    const items=engine?Object.keys(engine.SHAPES).filter(name=>engine.chordDiagram(name)):[];
-    const escapeText=text=>String(text).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-    function classify(name){
-      if(/7/.test(name))return 'seventh';
-      if(/m(?!aj)/.test(name))return 'minor';
-      return 'major';
+    if(!resource || !resource.sections){root.textContent='Não foi possível carregar o dicionário. Atualize a página.';return;}
+    const escapeText=text=>String(text).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;'}[ch]));
+    const normalize=text=>String(text).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    function chordSVG(item){
+      const frets=item.shape.map(n=>n==='x'?-1:Number(n));
+      const pressed=frets.filter(n=>n>0);
+      const base=pressed.length&&Math.min(...pressed)>3?Math.min(...pressed):1;
+      const y0=28, space=20, x0=20, xspace=20, lines=[];
+      for(let x=0;x<6;x++)lines.push('<line x1="'+(x0+x*xspace)+'" y1="'+y0+'" x2="'+(x0+x*xspace)+'" y2="'+(y0+5*space)+'" stroke="#8393aa" stroke-width="1.4"/>');
+      for(let y=0;y<6;y++)lines.push('<line x1="'+x0+'" y1="'+(y0+y*space)+'" x2="'+(x0+5*xspace)+'" y2="'+(y0+y*space)+'" stroke="#8393aa" stroke-width="'+(y===0&&base===1?'3.5':'1.4')+'"/>');
+      frets.forEach((f,i)=>{
+        const x=x0+i*xspace;
+        if(f===-1)lines.push('<text x="'+x+'" y="17" font-size="15" fill="#c03e3e" text-anchor="middle">×</text>');
+        else if(f===0)lines.push('<circle cx="'+x+'" cy="14" r="4.5" fill="#fff" stroke="#61748b" stroke-width="1.5"/>');
+        else lines.push('<circle cx="'+x+'" cy="'+(y0+(f-base+.5)*space)+'" r="7.4" fill="#1e4265"/>');
+      });
+      if(base>1)lines.push('<text x="5" y="43" fill="#253953" font-size="10">'+base+'ª</text>');
+      return '<svg class="chord-svg" viewBox="0 0 136 149" role="img" aria-label="Diagrama de '+escapeText(item.name)+'">'+lines.join('')+'</svg>';
     }
     function render(){
-      const q=search.value.trim().toLowerCase();
-      const f=kind.value;
-      let total=0;
-      const blocks=notes.map(root=>{
-        const list=items.filter(name=>name.charAt(0)===root && name.toLowerCase().includes(q) && (f==='all'||classify(name)===f));
-        if(!list.length)return '';
-        total+=list.length;
-        const cards=list.map(name=>'<article class="dict-card"><strong>'+escapeText(name)+'</strong>'+engine.chordDiagram(name)+'<small>Diagrama de violão</small></article>').join('');
-        return '<section class="dict-section" id="nota-'+root+'"><h2>Acordes de '+root+'</h2><p>'+list.length+' posição(ões) disponíveis</p><div class="dict-grid">'+cards+'</div></section>';
+      const q=normalize(search.value.trim());
+      const type=kind.value;
+      let total=0,shown=0;
+      const output=resource.sections.map(section=>{
+        const all=section.chords.filter(chord=>!q||normalize(chord.name+' '+section.title+' '+section.category).includes(q));
+        const matches=all.filter(chord=>type==='all' || (type==='inversions' ? section.category.startsWith('INVERS') : type==='seventh' ? /7|sétima|tétrades/i.test(chord.name+' '+section.title) : type==='minor' ? /menor|menores|minor|^.*m(?:7|$)/i.test(section.title+' '+chord.name) : /maior|maiores/i.test(section.title) && !section.category.startsWith('INVERS')));
+        if(!matches.length)return '';
+        total+=matches.length;shown++;
+        const cards=matches.map(chord=>'<article class="dict-card"><strong>'+escapeText(chord.name)+'</strong>'+chordSVG(chord)+'<small>'+escapeText(chord.shape.join(' – '))+'</small></article>').join('');
+        return '<section class="dict-section" id="'+section.id+'"><span class="dict-eyebrow">'+escapeText(section.category)+' • página '+section.page+'</span><h2>'+escapeText(section.title)+'</h2><p>'+escapeText(section.desc)+'</p>'+(section.formula?'<p><strong>Fórmula:</strong> '+escapeText(section.formula)+'</p>':'')+'<div class="dict-grid">'+cards+'</div>'+(section.tip?'<p style="margin-top:12px;color:#ffcf50"><strong>Dica de estudo:</strong> '+escapeText(section.tip)+'</p>':'')+'</section>';
       }).join('');
-      target.innerHTML=blocks || '<div class="dict-empty">Nenhum acorde encontrado. Experimente outro nome ou tipo.</div>';
-      count.textContent=total+' acorde(s)';
+      root.innerHTML=output||'<div class="dict-empty">Nenhum acorde encontrado. Experimente outro nome, família ou filtro.</div>';
+      count.textContent=total+' posição(ões) • '+shown+' família(s)';
     }
+    const familyNav=document.createElement('nav');familyNav.className='dict-letters';familyNav.setAttribute('aria-label','Ir à família de acordes');familyNav.style.marginTop='8px';
+    const groups=[['Tríades',7],['Tétrades',11],['Tensões',19],['Inversões',35],['Prática',39]];
+    familyNav.innerHTML=groups.map(([label,n])=>'<a href="'+(n===39?'#pratica':'#familia-'+n)+'">'+label+'</a>').join('');
+    document.querySelector('.dict-toolbar').appendChild(familyNav);
     search.addEventListener('input',render);
     kind.addEventListener('change',render);
-    let ticking=false;
+    let raf=false;
     window.addEventListener('scroll',()=>{
-      if(ticking)return;ticking=true;
+      if(raf)return;raf=true;
       window.requestAnimationFrame(()=>{
         const max=document.documentElement.scrollHeight-window.innerHeight;
         document.getElementById('dict-progress').style.width=(max>0?Math.min(100,window.scrollY/max*100):0)+'%';
-        ticking=false;
+        raf=false;
       });
     },{passive:true});
     render();
