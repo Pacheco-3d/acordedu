@@ -163,3 +163,54 @@ body h1,body h2,body h3{font-family:'DM Sans',Arial,sans-serif;letter-spacing:-.
  .cifra-theme-dark .cifra-lyric,.cifra-theme-dark .original-lyric,.cifra-theme-light .cifra-lyric,.cifra-theme-light .original-lyric{color:#000!important}
  .cifra-theme-control{display:none!important}
 }
+
+
+/* Leitura de cifras v2 — tema visível no topo e resistente a estilos antigos */
+.cifra-theme-prominent{
+  order:-10;
+  flex:1 1 100%;
+  justify-content:flex-start;
+  background:#f2f2f4;
+  border:1px solid #d7d7dc;
+  border-radius:12px;
+  padding:9px 12px;
+}
+.cifra-theme-prominent>strong{min-width:108px;color:#151515}
+.cifra-theme-option{font-size:.75rem;font-weight:800;color:#242424}
+.cifra-theme-label{display:none}
+.reading-theme-light .cifra-controls{background:#f7f7f8!important;color:#101010!important;border-color:#d7d7dc!important}
+.reading-theme-light .cifra-theme-prominent{background:#ececef!important}
+.reading-theme-dark .cifra-controls{background:#210b35!important;color:#fff!important;border-color:#482066!important}
+.reading-theme-dark .cifra-theme-prominent{background:#2c1048!important;border-color:#5c287e!important}
+.reading-theme-dark .cifra-theme-prominent>strong,
+.reading-theme-dark .cifra-theme-option{color:#fff!important}
+.reading-theme-dark .stepper{background:#32154e!important}
+.reading-theme-dark .stepper button{background:#140720!important;color:#fff!important}
+.reading-theme-dark .stepper span{color:#fff!important}
+.reading-theme-dark .cifra-controls .btn-light,
+.reading-theme-dark .cifra-controls .btn-ghost{background:#140720!important;color:#fff!important;border-color:#5d3676!important}
+.cifra-body.cifra-theme-light{
+  background:#dedee2!important;
+  color:#000!important;
+}
+.cifra-body.cifra-theme-light .cifra-line,
+.cifra-body.cifra-theme-light .cifra-lyric,
+.cifra-body.cifra-theme-light .original-row,
+.cifra-body.cifra-theme-light .original-lyric{color:#000!important}
+.cifra-body.cifra-theme-light .cifra-chord,
+.cifra-body.cifra-theme-light .chord-at,
+.cifra-body.cifra-theme-light .original-chords,
+.cifra-body.cifra-theme-light .inline-chord{color:#F900FF!important;text-shadow:none!important}
+.cifra-body.cifra-theme-dark{
+  background:#100019!important;
+  color:#fff!important;
+  border-color:#4b176d!important;
+}
+.cifra-body.cifra-theme-dark .cifra-line,
+.cifra-body.cifra-theme-dark .cifra-lyric,
+.cifra-body.cifra-theme-dark .original-row,
+.cifra-body.cifra-theme-dark .original-lyric{color:#fff!important}
+.cifra-body.cifra-theme-dark .cifra-chord,
+.cifra-body.cifra-theme-dark .chord-at,
+.cifra-body.cifra-theme-dark .original-chords,
+.cifra-body.cifra-theme-dark .inline-chord{color:#5200FF!important;text-shadow:0 0 12px #8b52ff!important}
