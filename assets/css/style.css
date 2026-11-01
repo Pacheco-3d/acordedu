@@ -313,3 +313,134 @@ body h1,body h2,body h3{font-family:'DM Sans',Arial,sans-serif;letter-spacing:-.
 .cifra-line{
   font-size:var(--chord-size,18px);
 }
+
+
+/* Tema escuro global harmonizado */
+body.reading-theme-dark{
+  --bg:#17151b;
+  --white:#211e26;
+  --ink:#f4f0f7;
+  --muted:#aaa2b2;
+  --line:#3a3540;
+  --shadow:0 16px 44px #0b091033;
+  background:#17151b!important;
+  color:#f4f0f7!important;
+}
+body.reading-theme-dark .edu-main,
+body.reading-theme-dark .edu-main-home,
+body.reading-theme-dark .edu-home-panels,
+body.reading-theme-dark .edu-main:not(.edu-main-home){
+  background:#17151b!important;
+  color:#f4f0f7!important;
+}
+body.reading-theme-dark .panel,
+body.reading-theme-dark .music-card,
+body.reading-theme-dark .album-card,
+body.reading-theme-dark .artist-card,
+body.reading-theme-dark .list-row,
+body.reading-theme-dark .reference-card,
+body.reading-theme-dark .stat,
+body.reading-theme-dark .empty,
+body.reading-theme-dark .pill,
+body.reading-theme-dark .portal-floating-card,
+body.reading-theme-dark .quick-links a,
+body.reading-theme-dark .rank-list,
+body.reading-theme-dark .aside-card,
+body.reading-theme-dark .alphabet-panel,
+body.reading-theme-dark .portal-reference-list,
+body.reading-theme-dark .repertoire-counters>div,
+body.reading-theme-dark .playlist-card,
+body.reading-theme-dark .catholic-collection{
+  background:#211e26!important;
+  color:#f4f0f7!important;
+  border-color:#3a3540!important;
+  box-shadow:0 12px 34px #08070a24!important;
+}
+body.reading-theme-dark .input,
+body.reading-theme-dark .select,
+body.reading-theme-dark .textarea,
+body.reading-theme-dark .hero-search,
+body.reading-theme-dark .edu-search,
+body.reading-theme-dark .playlist-add select{
+  background:#19171d!important;
+  color:#f7f4fa!important;
+  border-color:#45404a!important;
+}
+body.reading-theme-dark input::placeholder,
+body.reading-theme-dark textarea::placeholder{color:#817987!important}
+body.reading-theme-dark .btn-light,
+body.reading-theme-dark .stepper button{
+  background:#2a2630!important;
+  color:#f4f0f7!important;
+  border-color:#48414f!important;
+}
+body.reading-theme-dark .btn-ghost{
+  color:#f4f0f7!important;
+  border-color:#48414f!important;
+}
+body.reading-theme-dark .tag{
+  background:#332d3a!important;
+  color:#d9d0e1!important;
+}
+body.reading-theme-dark .tag.lime{
+  background:#283224!important;
+  color:#c9e9ae!important;
+}
+body.reading-theme-dark .music-card p,
+body.reading-theme-dark .album-card p,
+body.reading-theme-dark .artist-card p,
+body.reading-theme-dark .muted,
+body.reading-theme-dark .mini-stat span{
+  color:#aaa2b2!important;
+}
+body.reading-theme-dark .music-card:hover,
+body.reading-theme-dark .album-card:hover,
+body.reading-theme-dark .artist-card:hover{
+  border-color:#665b70!important;
+  box-shadow:0 16px 38px #08070a40!important;
+}
+body.reading-theme-dark .edu-footer{
+  background:#0f0d12!important;
+  color:#b8b0c1!important;
+  border-top:1px solid #2f2a34!important;
+}
+body.reading-theme-dark .edu-sidebar{
+  background:linear-gradient(#111016,#1b1820)!important;
+  border-right:1px solid #302b35!important;
+}
+body.reading-theme-dark .edu-header{
+  background:#0f0d12!important;
+  border-bottom-color:#312b36!important;
+}
+body.reading-theme-dark .cifra-controls{
+  background:#211e26!important;
+  color:#fff!important;
+  border-color:#45404a!important;
+}
+body.reading-theme-dark .stepper{background:#19171d!important}
+body.reading-theme-dark .song-head h1,
+body.reading-theme-dark .page-top h1,
+body.reading-theme-dark h2,
+body.reading-theme-dark h3{color:#f7f4fa!important}
+body.reading-theme-dark .notice{
+  background:#282330!important;
+  color:#d9d2e0!important;
+  border-color:#49404f!important;
+}
+body.reading-theme-dark .notice.warning{
+  background:#332b25!important;
+  color:#edd5bc!important;
+  border-color:#5a493b!important;
+}
+body.reading-theme-dark .mobile-menu{
+  background:#17151b!important;
+  color:#f4f0f7!important;
+}
+body.reading-theme-dark .footer{
+  background:#0f0d12!important;
+  color:#b8b0c1!important;
+}
+body.reading-theme-dark .cifra-body.cifra-theme-dark{
+  background:#252129!important;
+  border-color:#49424e!important;
+}

@@ -7,6 +7,9 @@ data.songs.push(...importados.songs);data.artists.push(...importados.artists);da
 const terco=window.ACORDE_TERCO||{songs:[],artists:[],albums:[],playlists:{},schedule:{}};
 data.songs.push(...terco.songs);data.artists.push(...terco.artists);data.albums.push(...terco.albums);
 const page=document.body.dataset.page||'home';const base=document.body.dataset.base||'.';
+const globalReadingTheme=localStorage.getItem('as-cifra-theme')==='dark'?'dark':'light';
+document.body.classList.toggle('reading-theme-dark',globalReadingTheme==='dark');
+document.body.classList.toggle('reading-theme-light',globalReadingTheme!=='dark');
 const link=path=>{const route=String(path||'index.html');return `${base}/${route.endsWith('/')?route+'index.html':route}`};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const normalize=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
