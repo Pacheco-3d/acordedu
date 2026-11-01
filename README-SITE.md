@@ -1,5 +1,7 @@
-# AcordeEDU
+# AcordeEDU — Portal de cifras
 
-Site HTML, CSS e JavaScript. Abra `index.html`. Para publicar via GitHub Pages: Settings > Pages > Deploy from a branch > main > /(root) > Save. O link padrão será https://pacheco-3d.github.io/acordedu/ .
+Acesse o site: https://pacheco-3d.github.io/acordedu/
 
-O catálogo inicial online contém referências de títulos e artistas. Cifras completas dos documentos enviados ainda precisam ser migradas do ZIP anterior. Favoritos são salvos apenas no navegador. Fotos decorativas não representam necessariamente os artistas.
+Para editar o projeto, use `index.html`, `assets/site.css`, `assets/site.js` e `assets/catalogo.js`.
+
+O catálogo e os recursos são ampliados progressivamente. As músicas podem apresentar fichas sem cifra completa até que o conteúdo correspondente seja cadastrado. A área de repertório utiliza favoritos locais, sem login nesta versão.
