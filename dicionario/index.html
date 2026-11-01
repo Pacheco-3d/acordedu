@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#111a26">
+  <meta name="description" content="Dicionário de acordes do AcordeEDU: posições de violão, diagramas e pesquisa por nota.">
+  <title>Dicionário de Acordes • AcordeEDU</title>
+  <link rel="icon" href="../assets/img/acordeedu-favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    html{scroll-behavior:smooth;scroll-padding-top:180px}
+    body{margin:0;color:#e8f0f9;background:#111a26;font-family:"DM Sans",sans-serif}
+    .dict-header{position:sticky;top:0;z-index:30;background:#0f1725f2;backdrop-filter:blur(14px);border-bottom:1px solid #ffffff1c}
+    .dict-top{max-width:1290px;min-height:70px;margin:auto;padding:10px 26px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .dict-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#f4f8fc;font-weight:800;font-size:23px}
+    .dict-brand img{width:43px;height:43px;object-fit:contain}
+    .dict-brand span span{color:#ffc62a}
+    .dict-nav{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+    .dict-nav a{color:#cad4e0;text-decoration:none;padding:8px 11px;border-radius:10px;font-size:14px}
+    .dict-nav a:hover,.dict-nav a[aria-current]{background:#29374e;color:#fff}
+    .dict-progress{height:3px;background:linear-gradient(90deg,#ffd34e,#4bb6d9);width:0;transition:width .08s linear}
+    .dict-main{max-width:1290px;margin:auto;padding:38px 26px 90px}
+    .dict-eyebrow{letter-spacing:.12em;font-size:12px;font-weight:800;color:#f6bf36;text-transform:uppercase}
+    .dict-hero h1{font-family:"Space Grotesk",sans-serif;font-size:clamp(33px,5vw,59px);line-height:1.06;margin:12px 0;color:#fff}
+    .dict-hero p{color:#c2cedf;font-size:16px;max-width:720px;line-height:1.7}
+    .dict-notes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:26px 0 30px}
+    .dict-tip{border-radius:14px;padding:18px;background:#1c2940;border:1px solid #ffffff18}
+    .dict-tip strong{display:block;color:#ffcb43;font-size:20px;margin-bottom:7px}
+    .dict-tip span{color:#d5ddeb;font-size:13px;line-height:1.5}
+    .dict-toolbar{position:sticky;top:73px;z-index:20;display:flex;flex-direction:column;gap:12px;padding:15px;border:1px solid #40506b;background:#142039f5;backdrop-filter:blur(10px);border-radius:17px;margin:22px 0 26px}
+    .dict-controls{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+    .dict-search,.dict-select{background:#0e1929;color:#fff;border:1px solid #53617a;border-radius:10px;padding:12px 14px;font:inherit;min-height:43px}
+    .dict-search{flex:1;min-width:190px}.dict-search:focus,.dict-select:focus{outline:2px solid #f9c53a;outline-offset:1px}
+    .dict-result{margin-left:auto;color:#aebed2;font-size:13px}
+    .dict-letters{display:flex;gap:6px;flex-wrap:wrap}
+    .dict-letters a{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border:1px solid #53617a;border-radius:10px;padding:7px 11px;color:#e6eff9;min-width:34px;font-weight:700}
+    .dict-letters a:hover,.dict-letters a:focus{background:#f4c341;color:#152032;border-color:#f4c341}
+    .dict-section{scroll-margin-top:185px;margin-top:33px}
+    .dict-section h2{font-family:"Space Grotesk",sans-serif;color:#fff;font-size:26px;margin:0 0 5px}
+    .dict-section p{color:#a9b7cc;font-size:13px;margin:0 0 17px}
+    .dict-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:15px}
+    .dict-card{display:flex;flex-direction:column;align-items:center;gap:12px;padding:15px 12px;background:#f7f9fc;border:1px solid #d5dce6;border-radius:15px;color:#1c314b;min-height:222px;box-shadow:0 5px 14px #00000010}
+    .dict-card strong{font-size:23px;font-family:"Space Grotesk",sans-serif}
+    .dict-card small{color:#536275;font-size:11px;text-align:center}
+    .dict-card .chord-svg{width:131px;max-width:100%;height:auto}
+    .dict-empty{padding:26px;border-radius:15px;background:#1c2940;color:#c7d2e3}
+    .dict-back{position:fixed;right:20px;bottom:20px;z-index:35;background:#ffcc42;color:#172237;border:0;border-radius:60px;min-width:48px;min-height:48px;cursor:pointer;box-shadow:0 6px 18px #0005;font-size:21px;font-weight:800}
+    .dict-footer{border-top:1px solid #ffffff23;padding:28px;text-align:center;color:#a9bad2}
+    .dict-footer a{color:#f3c847;text-decoration:none}
+    [hidden]{display:none!important}
+    @media(max-width:720px){
+      .dict-top{padding:10px 15px;flex-wrap:wrap}
+      .dict-nav{gap:3px}.dict-nav a{padding:5px 7px;font-size:12px}
+      .dict-main{padding:25px 14px 70px}
+      .dict-notes{grid-template-columns:1fr}
+      .dict-toolbar{top:111px}
+      .dict-section{scroll-margin-top:260px}
+      .dict-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+      .dict-card{padding:12px 7px;min-height:215px}
+    }
+  </style>
+</head>
+<body>
+  <header class="dict-header">
+    <div class="dict-top">
+      <a class="dict-brand" href="../index.html"><img src="../assets/img/edu/acordeedu-icone.webp" alt=""><span>Acorde<span>EDU</span></span></a>
+      <nav class="dict-nav" aria-label="Navegação principal">
+        <a href="../index.html">Início</a>
+        <a href="../musicas/">Músicas</a>
+        <a href="../artistas/">Artistas</a>
+        <a href="../gallery/albuns/">Álbuns</a>
+        <a href="../ferramentas/">Ferramentas</a>
+        <a href="./index.html" aria-current="page">Dicionário</a>
+      </nav>
+    </div>
+    <div class="dict-progress" id="dict-progress"></div>
+  </header>
+  <main class="dict-main">
+    <section class="dict-hero" id="inicio">
+      <span class="dict-eyebrow">Ferramentas musicais • violão</span>
+      <h1>Dicionário de <span style="color:#ffce46">Acordes</span></h1>
+      <p>Consulte as posições dos acordes, pesquise por nome e explore os diagramas com uma rolagem contínua. Cada desenho representa as seis cordas do violão, da mais grave para a mais aguda.</p>
+    </section>
+    <section class="dict-notes" aria-label="Como interpretar os diagramas">
+      <div class="dict-tip"><strong>● Casa pressionada</strong><span>O ponto indica onde posicionar os dedos no braço do violão.</span></div>
+      <div class="dict-tip"><strong>○ Corda solta</strong><span>Toque a corda sem pressioná-la em nenhuma casa.</span></div>
+      <div class="dict-tip"><strong>× Não tocar</strong><span>A corda indicada com X deve ser evitada nesse desenho.</span></div>
+    </section>
+    <div class="dict-toolbar" aria-label="Localizar acordes">
+      <div class="dict-controls">
+        <input id="dict-search" class="dict-search" type="search" placeholder="Buscar acorde, ex.: Am, C7, F#" aria-label="Buscar acorde" autocomplete="off">
+        <select id="dict-type" class="dict-select" aria-label="Filtrar tipo de acorde">
+          <option value="all">Todos os tipos</option>
+          <option value="major">Maiores</option>
+          <option value="minor">Menores</option>
+          <option value="seventh">Com sétima</option>
+        </select>
+        <span id="dict-count" class="dict-result" aria-live="polite"></span>
+      </div>
+      <nav class="dict-letters" aria-label="Ir até a nota">
+        <a href="#nota-C">C</a><a href="#nota-D">D</a><a href="#nota-E">E</a><a href="#nota-F">F</a><a href="#nota-G">G</a><a href="#nota-A">A</a><a href="#nota-B">B</a>
+      </nav>
+    </div>
+    <div id="dict-content"><p>Carregando os diagramas...</p></div>
+  </main>
+  <button class="dict-back" aria-label="Voltar ao topo" title="Voltar ao topo" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+  <footer class="dict-footer">Dicionário de Acordes • <a href="../index.html">AcordeEDU</a> — Consulte as posições e pratique no seu ritmo.</footer>
+  <script src="../assets/js/importadas.js"></script>
+  <script src="../assets/js/chords.js"></script>
+  <script>
+  (function(){
+    const engine=window.AcordeChords;
+    const target=document.getElementById('dict-content');
+    const search=document.getElementById('dict-search');
+    const kind=document.getElementById('dict-type');
+    const count=document.getElementById('dict-count');
+    const notes=['C','D','E','F','G','A','B'];
+    const items=engine?Object.keys(engine.SHAPES).filter(name=>engine.chordDiagram(name)):[];
+    const escapeText=text=>String(text).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    function classify(name){
+      if(/7/.test(name))return 'seventh';
+      if(/m(?!aj)/.test(name))return 'minor';
+      return 'major';
+    }
+    function render(){
+      const q=search.value.trim().toLowerCase();
+      const f=kind.value;
+      let total=0;
+      const blocks=notes.map(root=>{
+        const list=items.filter(name=>name.charAt(0)===root && name.toLowerCase().includes(q) && (f==='all'||classify(name)===f));
+        if(!list.length)return '';
+        total+=list.length;
+        const cards=list.map(name=>'<article class="dict-card"><strong>'+escapeText(name)+'</strong>'+engine.chordDiagram(name)+'<small>Diagrama de violão</small></article>').join('');
+        return '<section class="dict-section" id="nota-'+root+'"><h2>Acordes de '+root+'</h2><p>'+list.length+' posição(ões) disponíveis</p><div class="dict-grid">'+cards+'</div></section>';
+      }).join('');
+      target.innerHTML=blocks || '<div class="dict-empty">Nenhum acorde encontrado. Experimente outro nome ou tipo.</div>';
+      count.textContent=total+' acorde(s)';
+    }
+    search.addEventListener('input',render);
+    kind.addEventListener('change',render);
+    let ticking=false;
+    window.addEventListener('scroll',()=>{
+      if(ticking)return;ticking=true;
+      window.requestAnimationFrame(()=>{
+        const max=document.documentElement.scrollHeight-window.innerHeight;
+        document.getElementById('dict-progress').style.width=(max>0?Math.min(100,window.scrollY/max*100):0)+'%';
+        ticking=false;
+      });
+    },{passive:true});
+    render();
+  })();
+  </script>
+</body></html>
