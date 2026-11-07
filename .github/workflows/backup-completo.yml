@@ -1,0 +1,25 @@
+name: Backup completo AcordeEDU
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+      - name: Gerar ZIP completo
+        run: |
+          zip -r AcordeEDU-completo-atualizado.zip . -x ".git/*"
+      - name: Publicar artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: AcordeEDU-completo-atualizado
+          path: AcordeEDU-completo-atualizado.zip
+          if-no-files-found: error
+          retention-days: 7
