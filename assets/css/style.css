@@ -816,3 +816,17 @@ body.reading-theme-dark .song-side-toggle{
     margin:0 2px!important;
   }
 }
+
+
+/* Categorias litúrgicas */
+.liturgical-filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.liturgical-filter{display:inline-flex;align-items:center;gap:7px;border:1px solid #dfe4ea;background:#fff;color:#14233c;border-radius:999px;padding:9px 13px;font-weight:800;font-size:13px;cursor:pointer}
+.liturgical-filter span{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:#f1f4f7;font-size:11px;color:#697487}
+.liturgical-filter:hover{border-color:#ffc400}
+.liturgical-filter.active{background:#ffc400;border-color:#ffc400;color:#081b37}
+.liturgical-filter.active span{background:rgba(255,255,255,.68);color:#081b37}
+@media(max-width:768px){
+ .liturgical-filters{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+ .liturgical-filters::-webkit-scrollbar{display:none}
+ .liturgical-filter{flex:0 0 auto;padding:8px 11px;font-size:12px}
+}
