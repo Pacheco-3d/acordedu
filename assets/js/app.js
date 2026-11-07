@@ -447,20 +447,71 @@ function repertoirePage(){
 }
 let metronomeTimer=null,audioCtx=null;function toolsPage(){shell(`${heading('FERRAMENTAS','Seu estúdio de bolso','Recursos simples para praticar, estudar acordes e descobrir possíveis tons.')}<div class="two-col"><div class="stack"><div class="panel"><div class="tool-head"><div><span class="eyebrow">PRATIQUE</span><h2>Metrônomo</h2></div><span class="tag lime">Áudio</span></div><div class="metronome-beat" id="beatVisual">90</div><input class="range" type="range" id="bpmRange" min="40" max="220" value="90" aria-label="Batidas por minuto"><div class="form-actions"><button id="metroStart" class="btn btn-primary">▶ Iniciar</button><button id="metroStop" class="btn btn-light">■ Parar</button></div><p class="muted tiny" style="margin-top:10px">Clique em iniciar para habilitar o som no navegador.</p></div><div class="panel"><div><span class="eyebrow">EXPLORE</span><h2>Notas e acordes</h2></div><p style="margin:0 0 13px"><a class="btn btn-light" href="${link('dicionario/')}">Abrir dicionário completo ↗</a></p><p class="muted" style="margin:8px 0 13px">Clique em uma nota para ver um acorde básico de violão.</p><div class="note-list" id="notes">${['C','D','E','F','G','A','B','Am','Dm','Em','Bm'].map(n=>`<button data-note="${n}">${n}</button>`).join('')}</div><div id="chosenChord" style="margin-top:16px"></div></div></div><div class="stack"><div class="panel"><span class="eyebrow">INTELIGÊNCIA MUSICAL</span><h2>Detector de tom</h2><p class="muted" style="margin:10px 0 14px">Insira uma sequência de acordes (ex.: G D Em C) para receber uma estimativa da tonalidade.</p><label for="detectText" class="label">Acordes separados por espaços</label><textarea class="textarea" id="detectText">G D Em C G D C G</textarea><button id="detectBtn" class="btn btn-primary" style="margin-top:13px">Analisar progressão</button><div id="detectResult" class="notice" style="margin-top:12px" aria-live="polite">Aguardando acordes...</div></div><div class="panel"><span class="eyebrow">AFINAÇÃO</span><h2>Afinador de referência</h2><p class="muted" style="margin:11px 0">Ouça o som de referência para as cordas soltas do violão (E A D G B E). Não analisa o microfone nesta versão.</p><div class="note-list" id="tuningButtons">${[['E2',82.41],['A2',110],['D3',146.83],['G3',196],['B3',246.94],['E4',329.63]].map(([n,h])=>`<button data-hz="${h}">${n}</button>`).join('')}</div></div></div></div>`);function audio(){audioCtx??=new (window.AudioContext||window.webkitAudioContext)();audioCtx.resume();return audioCtx}function beep(hz=1000,duration=.04,volume=.1,kind='sine'){const c=audio(),o=c.createOscillator(),g=c.createGain();o.frequency.value=hz;o.type=kind;g.gain.setValueAtTime(volume,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+duration);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+duration)}let beat=0;function runMetronome(){if(metronomeTimer)clearInterval(metronomeTimer);let bpm=Number($('#bpmRange').value);$('#beatVisual').textContent=bpm;beat=0;const tick=()=>{beep(beat%4===0?1400:900,.035,.1,'square');$('#beatVisual').classList.add('pulse');setTimeout(()=>$('#beatVisual')?.classList.remove('pulse'),100);beat++};tick();metronomeTimer=setInterval(tick,60000/bpm)}$('#metroStart').onclick=runMetronome;$('#metroStop').onclick=()=>{clearInterval(metronomeTimer);metronomeTimer=null;$('#beatVisual').classList.remove('pulse')};$('#bpmRange').oninput=e=>{let bpm=e.target.value;$('#beatVisual').textContent=bpm;if(metronomeTimer)runMetronome()};$$('[data-note]').forEach(btn=>btn.onclick=()=>{$('#chosenChord').innerHTML=`<div class="chord-box" style="max-width:170px"><h3>${esc(btn.dataset.note)}</h3>${chords.chordDiagram(btn.dataset.note)}</div>`});$$('[data-hz]').forEach(btn=>btn.onclick=()=>{const c=audio(),o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=Number(btn.dataset.hz);g.gain.setValueAtTime(.14,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+1.35);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+1.35)});$('#detectBtn').onclick=()=>{const str=$('#detectText').value;const list=str.match(/\b[A-G](?:#|b)?(?:maj7|m7b5|m7|m|dim|7|sus4)?(?:\/[A-G](?:#|b)?)?\b/g)||[];if(!list.length){$('#detectResult').textContent='Não identifiquei acordes. Tente: G D Em C';return}const result=chords.detectKey([{lines:[list.map(x=>`[${x}]`).join(' ')]}]);$('#detectResult').innerHTML=`<strong>Tom provável: ${esc(result.key)}</strong><p>Confiança aproximada: ${result.confidence}%. É uma estimativa por progressão harmônica e pode sugerir o relativo menor ou maior.</p>`}};
 
+const liturgicalCategories=['Entrada','Ato Penitencial','Glória','Salmos','Aclamação','Ofertório','Santo','Cordeiro de Deus','Comunhão','Consagrado','Final','Maria'];
+const liturgicalCategory=song=>{
+ const title=normalize(song?.title||'');
+ const body=normalize((song?.originalLayout||[]).map(x=>Array.isArray(x)?x[1]:'').join(' '));
+ const has=(re,where=title)=>re.test(where);
+
+ // Regras prioritárias definidas pelo proprietário.
+ if(has(/\b(maria|mae|maezinha|senhora|nossa senhora)\b/))return 'Maria';
+ if(has(/\b(gloria|kyrie)\b/))return 'Glória';
+ if(has(/\bsanto\b/))return 'Santo';
+
+ // Demais classificações litúrgicas.
+ if(has(/\b(cordeiro|agnus dei)\b/))return 'Cordeiro de Deus';
+ if(has(/\b(salmo|salmos)\b/))return 'Salmos';
+ if(has(/\b(aclamacao|aleluia)\b/))return 'Aclamação';
+ if(has(/\b(ofertorio|oferta|ofertas|ofertar)\b/))return 'Ofertório';
+ if(has(/\b(comunhao|eucaristia|eucaristico|eucaristica)\b/))return 'Comunhão';
+ if(has(/\b(consagrado|consagrada|consagracao|consagrar)\b/))return 'Consagrado';
+ if(has(/\b(ato penitencial|penitencial|piedade|misericordia)\b/))return 'Ato Penitencial';
+ if(has(/\b(entrada|procissao de entrada)\b/))return 'Entrada';
+ if(has(/\b(final|envio|despedida)\b/))return 'Final';
+
+ // Apoio pelo conteúdo quando o título não traz a indicação.
+ if(/\bcordeiro de deus\b/.test(body))return 'Cordeiro de Deus';
+ if(/\b(santo santo santo|santo e o senhor|santo e)\b/.test(body))return 'Santo';
+ if(/\b(kyrie|gloria a deus nas alturas)\b/.test(body))return 'Glória';
+ if(/\b(aleluia)\b/.test(body))return 'Aclamação';
+ if(/\b(pao da vida|corpo de cristo|eucaristia|comunhao)\b/.test(body))return 'Comunhão';
+ return 'Entrada';
+};
 function catholicPage(){
- const items=allSongs().filter(s=>s.genre==='Católica');
+ const items=allSongs().filter(s=>s.genre==='Católica').map(s=>({...s,liturgicalCategory:liturgicalCategory(s)}));
  const groups=cat.albums;
- shell(`${heading('CANTOS • FÉ • COMUNIDADE','Músicas Católicas',`${items.length} cifras importadas dos documentos enviados. Pesquise, abra e mude o tom de cada música.`)}
- <div class="catholic-intro"><span class="catholic-cross">✝</span><div><strong>Seu acervo católico, reunido em um só lugar.</strong><p>As coleções abaixo são agrupamentos temáticos criados para organizar as músicas — não representam álbuns oficiais. Os artistas foram identificados automaticamente quando possível.</p></div></div>
- <section class="section"><div class="home-section-heading"><div><span class="eyebrow">ESCOLHA UM TEMA</span><h2>Coleções por tema</h2></div></div><div class="catholic-collections">${groups.map(g=>`<a class="catholic-collection" href="${link('gallery/albuns/')}?id=${encodeURIComponent(g.id)}"><img loading="lazy" src="${imageUrl(g.cover)}" alt="Arte temática da coleção ${esc(g.title)}"><strong>${esc(g.title)}</strong><small>${items.filter(s=>s.albumId===g.id).length} cifras ↗</small></a>`).join('')}</div></section>
- <section class="section"><div class="home-section-heading"><div><span class="eyebrow">ACERVO COMPLETO</span><h2>Encontre sua música</h2><p>Busque por título ou artista. Clique na capa para abrir a cifra interativa.</p></div></div>
+ const params=new URLSearchParams(location.search),initialCat=params.get('cat')||'';
+ const counts=Object.fromEntries(liturgicalCategories.map(catName=>[catName,items.filter(s=>s.liturgicalCategory===catName).length]));
+ shell(`${heading('CANTOS • FÉ • COMUNIDADE','Músicas Católicas',`${items.length} cifras organizadas por momento litúrgico. Pesquise por título, artista ou categoria.`)}
+ <div class="catholic-intro"><span class="catholic-cross">✝</span><div><strong>Seu acervo católico, reunido e classificado.</strong><p>As categorias abaixo servem para localizar rapidamente os cantos de cada momento da celebração.</p></div></div>
+ <section class="section"><div class="home-section-heading"><div><span class="eyebrow">CATEGORIA LITÚRGICA</span><h2>Pesquisar por momento da missa</h2></div></div>
+ <div class="liturgical-filters" id="liturgicalFilters"><button type="button" class="liturgical-filter ${initialCat?'':'active'}" data-liturgical="">Todas <span>${items.length}</span></button>${liturgicalCategories.map(catName=>`<button type="button" class="liturgical-filter ${initialCat===catName?'active':''}" data-liturgical="${esc(catName)}">${esc(catName)} <span>${counts[catName]||0}</span></button>`).join('')}</div></section>
+ <section class="section"><div class="home-section-heading"><div><span class="eyebrow">ACERVO COMPLETO</span><h2>Encontre sua música</h2><p>Busque por título ou artista. A categoria escolhida fica combinada com a pesquisa.</p></div></div>
  ${filterUI('catholic',items,'Buscar entre as músicas católicas...')}
  </section>`);
- filterBox(items,'catholic');
- const genre=$('#catholic-genre');if(genre){genre.remove();}
- const q=new URLSearchParams(location.search).get('q');if(q){$('#catholic-search').value=q;$('#catholic-search').dispatchEvent(new Event('input'));}
+ const genre=$('#catholic-genre');if(genre)genre.remove();
+ const search=$('#catholic-search'),grid=$('#catholic-grid');
+ let activeCat=initialCat;
+ const renderFiltered=()=>{
+   const q=normalize(search?.value||'');
+   const filtered=items.filter(s=>{
+     const artist=artistBy(s.artistId);
+     const matchesCat=!activeCat||s.liturgicalCategory===activeCat;
+     const hay=normalize([s.title,artist.name,s.liturgicalCategory].join(' '));
+     return matchesCat&&(!q||hay.includes(q));
+   });
+   if(grid)grid.innerHTML=filtered.length?filtered.map(musicCard).join(''):'<div class="empty-state"><strong>Nenhuma música encontrada.</strong><p>Tente outra categoria ou termo de pesquisa.</p></div>';
+ };
+ if(search)search.addEventListener('input',renderFiltered);
+ $$('#liturgicalFilters [data-liturgical]').forEach(btn=>btn.onclick=()=>{
+   activeCat=btn.dataset.liturgical||'';
+   $$('#liturgicalFilters [data-liturgical]').forEach(x=>x.classList.toggle('active',x===btn));
+   const url=new URL(location.href);if(activeCat)url.searchParams.set('cat',activeCat);else url.searchParams.delete('cat');history.replaceState({},'',url);
+   renderFiltered();
+ });
+ const q=params.get('q');if(q&&search)search.value=q;
+ renderFiltered();
 }
-
 const render={reference:referencePage,catholic:catholicPage,home,songs:songsPage,song:songPage,artists:artistsPage,artist:artistPage,gallery:galleryPage,albums:albumsPage,gallerysongs:gallerySongs,submit:submitPage,admin:adminPage,tools:toolsPage,login:loginPage,repertorio:repertoirePage};(render[page]||home)();
 
 // catálogo ampliado 2026-11-07
