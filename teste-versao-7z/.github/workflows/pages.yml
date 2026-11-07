@@ -1,0 +1,110 @@
+name: Publicar AcordeEDU
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obter arquivos do repositorio
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Extrair e validar AcordeEDU v010
+        shell: bash
+        run: |
+          set -euo pipefail
+          SITE="$RUNNER_TEMP/acordedu-site"
+          UNPACKED="$RUNNER_TEMP/acordedu-unpacked"
+          mkdir -p "$SITE" "$UNPACKED"
+          if [ -f acordedu-site.zip ]; then
+            PACKAGE="acordedu-site.zip"
+          elif [ -f acordeedu___v010.zip ]; then
+            PACKAGE="acordeedu___v010.zip"
+          else
+            echo "::error::ZIP do site nao encontrado"
+            exit 1
+          fi
+          echo "Lendo $PACKAGE"
+          unzip -q "$PACKAGE" -d "$UNPACKED"
+          if [ -f "$UNPACKED/index.html" ]; then
+            SOURCE="$UNPACKED"
+          elif [ -f "$UNPACKED/acorde-studio-html/index.html" ]; then
+            SOURCE="$UNPACKED/acorde-studio-html"
+          else
+            echo "::error::ZIP sem index.html na pasta esperada"
+            exit 1
+          fi
+          cp -a "$SOURCE"/. "$SITE"/
+          touch "$SITE/.nojekyll"
+          test -s "$SITE/index.html"
+          for f in assets/js/app.js assets/js/data.js assets/js/catolicas.js assets/js/chords.js assets/css/style.css artistas/index.html artistas/perfil.html musicas/index.html musicas/cifra.html musicas/referencia.html categorias/catolica/index.html repertorio/index.html login/index.html; do
+            test -s "$SITE/$f" || { echo "::error::Arquivo ausente: $f"; exit 1; }
+          done
+          for f in "$SITE"/assets/js/*.js; do node --check "$f"; done
+          export SITE
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          from html.parser import HTMLParser
+          from urllib.parse import urlsplit,unquote
+          root=Path(os.environ["SITE"])
+          class Parser(HTMLParser):
+            def __init__(self): super().__init__(); self.urls=[]
+            def handle_starttag(self,tag,attrs):
+              d=dict(attrs)
+              if tag in ("a","script","link","img","source","form"):
+                for key in ("href","src","action"):
+                  if d.get(key): self.urls.append(d[key])
+          broken=[]
+          pages=list(root.rglob("*.html"))
+          for page in pages:
+            parser=Parser()
+            parser.feed(page.read_text(encoding="utf-8-sig"))
+            for url in parser.urls:
+              parsed=urlsplit(url)
+              if parsed.scheme or parsed.netloc or not parsed.path or url.startswith(("#","//")): continue
+              target=(root/unquote(parsed.path).lstrip("/")) if parsed.path.startswith("/") else (page.parent/unquote(parsed.path))
+              if target.is_dir(): target=target/"index.html"
+              if not target.is_file(): broken.append((str(page.relative_to(root)),url))
+          print("HTML pages:",len(pages),"broken local file paths:",len(broken))
+          if len(pages)<15 or broken: raise SystemExit("Pagina(s) faltando ou links locais invalidos: "+str(broken[:20]))
+          PY
+      - name: Sincronizar os arquivos completos na raiz do repositorio
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Mantem o ZIP original e o workflow; substitui arquivos antigos e conflitantes.
+          git rm -rf --ignore-unmatch -- assets index.html admin artistas categorias docs enviar ferramentas gallery login musicas repertorio dados README.md README-SITE.md LEIA-ME-PRIMEIRO.txt .nojekyll
+          cp -a "$RUNNER_TEMP/acordedu-site"/. .
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Sincroniza AcordeEDU v010 completo com catalogo, artistas e cifras [skip ci]"
+            git push origin HEAD:main
+          else
+            echo "Arquivos ja sincronizados"
+          fi
+      - name: Enviar site completo ao GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/acordedu-site
+      - name: Publicar o AcordeEDU
+        id: deployment
+        uses: actions/deploy-pages@v4

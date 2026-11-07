@@ -1,0 +1,9 @@
+ACORDEEDU — SITE HTML
+
+1. Extraia o ZIP completo.
+2. Abra a pasta acorde-studio-html e dê dois cliques no index.html.
+3. Clique nas setas do carrossel Top Artistas ou deslize horizontalmente.
+4. Clique em um artista ou capa para abrir uma página do próprio site.
+
+As músicas católicas e a área de cifras foram preservadas.
+As fotografias da interface são ilustrativas e precisam ser substituídas por imagens licenciadas para publicação.
