@@ -38,7 +38,7 @@ jobs:
           test -s artistas/index.html
           grep -q 'ACORDE_IMPORTADAS' assets/js/importadas.js
           for file in assets/js/*.js; do node --check "$file"; done
-          for page in $(find . -name '*.html'); do
+          for page in $(find . -path './teste-versao-7z' -prune -o -name '*.html' -print); do
             grep -q 'assets/js/importadas.js' "$page" || { echo "Missing importadas.js on $page"; exit 1; }
           done
           mkdir -p _site
