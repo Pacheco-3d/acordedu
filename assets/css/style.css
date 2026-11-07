@@ -579,3 +579,15 @@ body.reading-theme-dark .song-side-toggle{
 .playlist-key-ok{display:inline-grid;place-items:center;width:32px;min-width:32px;height:32px;padding:0;border:1px solid #e0b100;border-radius:8px;background:#ffca16;color:#0b1d39;font-size:15px;font-weight:900;cursor:pointer}
 .playlist-key-ok:hover{filter:brightness(1.04)}
 .playlist-track-actions{margin-left:2px}
+
+
+/* Home: remover visualmente os ícones de play embutidos nas thumbnails */
+.edu-song-art img{
+  width:118%!important;
+  height:118%!important;
+  max-width:none!important;
+  object-fit:cover!important;
+  object-position:left top!important;
+  transform:none!important;
+}
+.edu-song-card:hover .edu-song-art img{transform:scale(1.025)!important;transform-origin:left top}
