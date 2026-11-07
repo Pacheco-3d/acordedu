@@ -490,7 +490,7 @@ function catholicPage(){
  ${filterUI('catholic',items,'Buscar entre as músicas católicas...')}
  </section>`);
  const genre=$('#catholic-genre');if(genre)genre.remove();
- const search=$('#catholic-search'),grid=$('#catholic-grid');
+ const search=$('#catholic-search'),grid=$('#catholic-results');
  let activeCat=initialCat;
  const renderFiltered=()=>{
    const q=normalize(search?.value||'');
