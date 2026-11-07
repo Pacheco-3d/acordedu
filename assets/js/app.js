@@ -6,6 +6,18 @@ const importados=window.ACORDE_IMPORTADAS||{songs:[],artists:[],albums:[]};
 data.songs.push(...importados.songs);data.artists.push(...importados.artists);data.albums.push(...importados.albums);
 const terco=window.ACORDE_TERCO||{songs:[],artists:[],albums:[],playlists:{},schedule:{}};
 data.songs.push(...terco.songs);data.artists.push(...terco.artists);data.albums.push(...terco.albums);
+// Novos lotes enviados pelo proprietário: mescla sem duplicar música/artista.
+const newMusicChunks=[window.ACORDE_NOVAS_P1,window.ACORDE_NOVAS_P2,window.ACORDE_NOVAS_P3,window.ACORDE_NOVAS_P4,window.ACORDE_NOVAS_P5,window.ACORDE_NOVAS_P6].filter(Boolean);
+const importNorm=s=>String(s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+const importArtistByName=new Map(data.artists.map(a=>[importNorm(a.name),a.id]));
+const importAlbumByTitle=new Map(data.albums.map(a=>[importNorm(a.title),a.id]));
+const importSongKeys=new Set(data.songs.map(s=>importNorm(s.title)+'|'+importNorm((data.artists.find(a=>a.id===s.artistId)||{}).name)));
+newMusicChunks.forEach(chunk=>{
+ const localArtists=new Map((chunk.artists||[]).map(a=>[a.id,a]));
+ (chunk.artists||[]).forEach(a=>{const k=importNorm(a.name);if(!importArtistByName.has(k)){data.artists.push(a);importArtistByName.set(k,a.id)}});
+ (chunk.albums||[]).forEach(a=>{const k=importNorm(a.title);if(!importAlbumByTitle.has(k)){data.albums.push(a);importAlbumByTitle.set(k,a.id)}});
+ (chunk.songs||[]).forEach(song=>{const srcArtist=localArtists.get(song.artistId),artistName=srcArtist?.name||'',artistId=importArtistByName.get(importNorm(artistName))||song.artistId;const key=importNorm(song.title)+'|'+importNorm(artistName);if(importSongKeys.has(key))return;data.songs.push({...song,artistId,albumId:importAlbumByTitle.get(importNorm((chunk.albums||[]).find(a=>a.id===song.albumId)?.title))||song.albumId});importSongKeys.add(key)});
+});
 const page=document.body.dataset.page||'home';const base=document.body.dataset.base||'.';
 const globalReadingTheme=localStorage.getItem('as-cifra-theme')==='dark'?'dark':'light';
 document.body.classList.toggle('reading-theme-dark',globalReadingTheme==='dark');
@@ -94,7 +106,20 @@ const facil49=facil49Source.trim().split('\n').map((row,index)=>{
  return {title,artist,genre:'49 Músicas Fáceis',collection:'49 Músicas Fáceis',coverIndex:index%9+1,sourceTitle:'49 músicas fáceis cifradas para violão',sourceUrl:'https://pt.slideshare.net/slideshow/49-msicas-fceis-cifradas-para-violo/60558564'};
 });
 data.external??=[];
+const internetSertanejoRefs=[
+ {title:'Dormi na Praça',artist:'Bruno e Marrone',genre:'Sertanejo',collection:'Sertanejo popular',sourceTitle:'Banana Cifras — Sertanejo',sourceUrl:'https://www.bananacifras.com/cifra/genre/sertanejo'},
+ {title:'Bijuteria',artist:'Bruno e Marrone',genre:'Sertanejo',collection:'Sertanejo popular',sourceTitle:'Cifras — Sertanejo mais acessadas',sourceUrl:'https://www.cifras.com.br/mais-acessadas/sertanejo'},
+ {title:'Que Sorte a Nossa',artist:'Matheus e Kauan',genre:'Sertanejo',collection:'Sertanejo popular',sourceTitle:'Banana Cifras — Sertanejo',sourceUrl:'https://www.bananacifras.com/cifra/genre/sertanejo'},
+ {title:'Convite de Casamento',artist:'Gian e Giovani',genre:'Sertanejo',collection:'Sertanejo clássico',sourceTitle:'Banana Cifras — Sertanejo',sourceUrl:'https://www.bananacifras.com/cifra/genre/sertanejo'},
+ {title:'Nova York',artist:'Victor e Leo',genre:'Sertanejo',collection:'Sertanejo popular',sourceTitle:'Banana Cifras — Sertanejo',sourceUrl:'https://www.bananacifras.com/cifra/genre/sertanejo'},
+ {title:'Choram as Rosas',artist:'Bruno e Marrone',genre:'Sertanejo',collection:'Sertanejo popular',sourceTitle:'Banana Cifras — Sertanejo',sourceUrl:'https://www.bananacifras.com/cifra/genre/sertanejo'},
+ {title:'Ela é Demais',artist:'Rick e Renner',genre:'Sertanejo',collection:'Sertanejo popular',sourceTitle:'Cifras — Sertanejo mais acessadas',sourceUrl:'https://www.cifras.com.br/mais-acessadas/sertanejo'},
+ {title:'Só Pensando em Você',artist:'Rick e Renner',genre:'Sertanejo',collection:'Sertanejo popular',sourceTitle:'Cifras — Sertanejo mais acessadas',sourceUrl:'https://www.cifras.com.br/mais-acessadas/sertanejo'},
+ {title:'Irmão da Lua, Amigo das Estrelas',artist:'Zezé Di Camargo e Luciano',genre:'Sertanejo',collection:'Sertanejo popular',sourceTitle:'Cifras — Sertanejo mais acessadas',sourceUrl:'https://www.cifras.com.br/mais-acessadas/sertanejo'},
+ {title:'Sem Direção',artist:'Rick e Renner',genre:'Sertanejo',collection:'Sertanejo popular',sourceTitle:'Cifras — Sertanejo mais acessadas',sourceUrl:'https://www.cifras.com.br/mais-acessadas/sertanejo'}
+];
 const refExisting=new Map(data.external.map(item=>[normalize(item.title)+'|'+normalize(item.artist),item]));
+internetSertanejoRefs.forEach(item=>{const hasLocal=data.songs.some(s=>normalize(s.title)===normalize(item.title));const key=normalize(item.title)+'|'+normalize(item.artist);if(!hasLocal&&!refExisting.has(key)){data.external.push(item);refExisting.set(key,item)}});
 facil49.forEach(item=>{
  if(facil49ReadyTitles.has(normalize(item.title)))return;
  const key=normalize(item.title)+'|'+normalize(item.artist),current=refExisting.get(key);
