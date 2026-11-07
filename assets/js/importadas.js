@@ -2,4 +2,4 @@ window.ACORDE_IMPORTADAS={"songs":[{"id":"imp-sertanejo-eu-sei-de-cor","title":"
 
 ;(()=>{const b=document.body?.dataset?.base||'.';for(let i=1;i<=6;i++)document.write('<script src="'+b+'/assets/js/novas-p'+i+'.js?v=20261107-novas"><\/script>')})();
 
-;(()=>{const b=document.body?.dataset?.base||'.';for(let i=1;i<=9;i++)document.write('<script src="'+b+'/assets/js/batch2-'+i+'.js?v=20261107-catolico2"><\\/script>')})();
+;(()=>{const b=document.body?.dataset?.base||'.';for(let i=1;i<=9;i++)document.write('<script src="'+b+'/assets/js/batch2-'+i+'.js?v=20261107-catolico2"><\/script>')})();
