@@ -549,3 +549,14 @@ body.reading-theme-dark .song-side-toggle{
 /* Repertórios em sequência vertical: um bloco por linha */
 .playlist-grid{display:grid!important;grid-template-columns:1fr!important;gap:18px!important;width:100%}
 .playlist-card{width:100%!important;max-width:none!important;grid-column:1!important}
+
+
+/* Execução sequencial de repertório */
+.repertoire-play-nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin:0 0 16px;padding:12px 16px;border:1px solid #e6e9ee;border-radius:14px;background:#fff}
+.repertoire-back{font-size:13px;font-weight:800;color:#27364f}
+.repertoire-play-position{display:grid;text-align:center;gap:2px}
+.repertoire-play-position span{font-size:11px;color:#7a8493;font-weight:800}
+.repertoire-play-position strong{font-size:13px}
+.repertoire-play-arrows{display:flex;justify-content:flex-end;gap:8px;align-items:center}
+.playlist-track-main small strong{color:#0f203b}
+@media(max-width:760px){.repertoire-play-nav{grid-template-columns:1fr}.repertoire-play-position{text-align:left}.repertoire-play-arrows{justify-content:flex-start;flex-wrap:wrap}}
