@@ -462,3 +462,5 @@ function catholicPage(){
 }
 
 const render={reference:referencePage,catholic:catholicPage,home,songs:songsPage,song:songPage,artists:artistsPage,artist:artistPage,gallery:galleryPage,albums:albumsPage,gallerysongs:gallerySongs,submit:submitPage,admin:adminPage,tools:toolsPage,login:loginPage,repertorio:repertoirePage};(render[page]||home)();
+
+// catálogo ampliado 2026-11-07
