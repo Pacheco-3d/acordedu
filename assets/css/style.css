@@ -517,3 +517,14 @@ body.reading-theme-dark .song-side-toggle{
 .playlist-track-actions button{width:28px;height:28px;border:1px solid #dfe4ea;background:#fff;border-radius:7px;cursor:pointer;font-weight:800;line-height:1}
 .playlist-track-actions button:hover:not(:disabled){border-color:#f3b500;background:#fff8da}
 .playlist-track-actions button:disabled{opacity:.3;cursor:default}
+
+
+/* Repertório em lista visível */
+.playlist-card{display:grid;grid-template-columns:minmax(270px,.85fr) minmax(320px,1.15fr);column-gap:18px;align-items:start}
+.playlist-card>.playlist-head,.playlist-card>h3,.playlist-card>p,.playlist-card>.playlist-add{grid-column:1}
+.playlist-card>.playlist-tracks{grid-column:2;grid-row:1 / span 5;min-height:150px;padding-left:16px;border-left:1px solid #edf0f4}
+.playlist-empty-list{display:grid;place-items:center;min-height:120px;border:1px dashed #d9dee6;border-radius:12px;color:#8a94a4;font-size:13px;text-align:center;padding:18px}
+.playlist-track-row{padding:8px 0;border-bottom:1px solid #eef1f4}
+.playlist-track-row:last-child{border-bottom:0}
+.playlist-track-row>a{font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:850px){.playlist-card{grid-template-columns:1fr}.playlist-card>.playlist-head,.playlist-card>h3,.playlist-card>p,.playlist-card>.playlist-add,.playlist-card>.playlist-tracks{grid-column:1}.playlist-card>.playlist-tracks{grid-row:auto;border-left:0;border-top:1px solid #edf0f4;padding:14px 0 0;margin-top:12px}}
