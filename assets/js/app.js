@@ -135,8 +135,21 @@ const allSongs=()=>[...data.songs,...getStore('approved',[])];
 const pending=()=>getStore('pending',[]);
 const allArtists=()=>[...data.artists,...getStore('extraArtists',[])];
 const allAlbums=()=>[...data.albums,...getStore('extraAlbums',[])];
-// Perfis e repertorios locais: demonstracao sem autenticacao de servidor.
+// Perfis e repertórios locais: cada perfil é identificado por e-mail e pode ser reencontrado por nome ou e-mail neste navegador.
 const currentUser=()=>getStore('currentUser',null);
+const profiles=()=>getStore('profiles',[]);
+const normalizeLogin=value=>normalize(String(value||'').trim());
+const saveProfile=user=>{
+ if(!user?.email||!user?.name)return;
+ const email=String(user.email).trim().toLowerCase(),name=String(user.name).trim();
+ const next=profiles().filter(p=>String(p.email).toLowerCase()!==email);
+ setStore('profiles',[...next,{name,email,lastLoginAt:new Date().toISOString()}]);
+};
+const findProfile=identifier=>{
+ const key=normalizeLogin(identifier);
+ return profiles().find(p=>normalizeLogin(p.email)===key||normalizeLogin(p.name)===key)||null;
+};
+const signInProfile=user=>{saveProfile(user);setStore('currentUser',{name:user.name,email:String(user.email).toLowerCase()})};
 const accountKey=()=>currentUser()?.email||null;
 const privateKey=kind=>`${kind}-${accountKey()}`;
 const favs=()=>accountKey()?getStore(privateKey('favorites'),[]):[];
