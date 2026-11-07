@@ -528,3 +528,19 @@ body.reading-theme-dark .song-side-toggle{
 .playlist-track-row:last-child{border-bottom:0}
 .playlist-track-row>a{font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:850px){.playlist-card{grid-template-columns:1fr}.playlist-card>.playlist-head,.playlist-card>h3,.playlist-card>p,.playlist-card>.playlist-add,.playlist-card>.playlist-tracks{grid-column:1}.playlist-card>.playlist-tracks{grid-row:auto;border-left:0;border-top:1px solid #edf0f4;padding:14px 0 0;margin-top:12px}}
+
+
+/* Repertórios: card em linha cheia + seleção de tom por música */
+.playlist-grid{grid-template-columns:1fr!important;gap:16px}
+.playlist-card{display:grid!important;grid-template-columns:minmax(260px,340px) minmax(0,1fr)!important;gap:18px 22px;align-items:start;padding:20px}
+.playlist-card>.playlist-head,.playlist-card>h3,.playlist-card>p,.playlist-card>.playlist-add{grid-column:1}
+.playlist-card>.playlist-tracks{grid-column:2;grid-row:1 / span 5;min-height:150px;padding-left:20px;border-left:1px solid #edf0f4}
+.playlist-track-row{display:grid!important;grid-template-columns:28px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:10px 0}
+.playlist-track-main{min-width:0;display:grid;gap:2px}
+.playlist-track-main>a{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.playlist-track-main small{font-size:11px;color:#7a8493;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.playlist-key-picker{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#596579}
+.playlist-key-picker select{height:32px;border:1px solid #dfe4ea;border-radius:8px;background:#fff;padding:0 8px;font:inherit;color:#17243a}
+.playlist-add{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.playlist-add select{min-width:0}
+@media(max-width:950px){.playlist-card{grid-template-columns:1fr!important}.playlist-card>.playlist-head,.playlist-card>h3,.playlist-card>p,.playlist-card>.playlist-add,.playlist-card>.playlist-tracks{grid-column:1}.playlist-card>.playlist-tracks{grid-row:auto;border-left:0;border-top:1px solid #edf0f4;padding:14px 0 0}.playlist-track-row{grid-template-columns:28px minmax(0,1fr) auto}.playlist-key-picker{grid-column:2}.playlist-track-actions{grid-column:3;grid-row:1 / span 2}}
