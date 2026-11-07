@@ -500,7 +500,7 @@ function catholicPage(){
      const hay=normalize([s.title,artist.name,s.liturgicalCategory].join(' '));
      return matchesCat&&(!q||hay.includes(q));
    });
-   if(grid)grid.innerHTML=filtered.length?filtered.map(musicCard).join(''):'<div class="empty-state"><strong>Nenhuma música encontrada.</strong><p>Tente outra categoria ou termo de pesquisa.</p></div>';
+   if(grid)grid.innerHTML=filtered.length?`<div class="music-grid">${filtered.map(musicCard).join('')}</div>`:'<div class="empty"><strong>Nenhuma música encontrada.</strong><p>Tente outra categoria ou termo de pesquisa.</p></div>';$('#count-results')?.replaceChildren(document.createTextNode(`${filtered.length} resultado(s)`));
  };
  if(search)search.addEventListener('input',renderFiltered);
  $$('#liturgicalFilters [data-liturgical]').forEach(btn=>btn.onclick=()=>{
