@@ -560,3 +560,9 @@ body.reading-theme-dark .song-side-toggle{
 .repertoire-play-arrows{display:flex;justify-content:flex-end;gap:8px;align-items:center}
 .playlist-track-main small strong{color:#0f203b}
 @media(max-width:760px){.repertoire-play-nav{grid-template-columns:1fr}.repertoire-play-position{text-align:left}.repertoire-play-arrows{justify-content:flex-start;flex-wrap:wrap}}
+
+
+/* Navegação no rodapé da cifra dentro do repertório */
+.repertoire-bottom-nav{display:flex;justify-content:flex-end;gap:12px;align-items:center;margin:14px 0 0;padding:0 2px 4px}
+.repertoire-bottom-back,.repertoire-bottom-next{min-width:150px;justify-content:center}
+@media(max-width:640px){.repertoire-bottom-nav{justify-content:stretch;flex-direction:column}.repertoire-bottom-back,.repertoire-bottom-next{width:100%}}
