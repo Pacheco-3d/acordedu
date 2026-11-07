@@ -544,3 +544,8 @@ body.reading-theme-dark .song-side-toggle{
 .playlist-add{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
 .playlist-add select{min-width:0}
 @media(max-width:950px){.playlist-card{grid-template-columns:1fr!important}.playlist-card>.playlist-head,.playlist-card>h3,.playlist-card>p,.playlist-card>.playlist-add,.playlist-card>.playlist-tracks{grid-column:1}.playlist-card>.playlist-tracks{grid-row:auto;border-left:0;border-top:1px solid #edf0f4;padding:14px 0 0}.playlist-track-row{grid-template-columns:28px minmax(0,1fr) auto}.playlist-key-picker{grid-column:2}.playlist-track-actions{grid-column:3;grid-row:1 / span 2}}
+
+
+/* Repertórios em sequência vertical: um bloco por linha */
+.playlist-grid{display:grid!important;grid-template-columns:1fr!important;gap:18px!important;width:100%}
+.playlist-card{width:100%!important;max-width:none!important;grid-column:1!important}
