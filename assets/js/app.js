@@ -7,16 +7,16 @@ data.songs.push(...importados.songs);data.artists.push(...importados.artists);da
 const terco=window.ACORDE_TERCO||{songs:[],artists:[],albums:[],playlists:{},schedule:{}};
 data.songs.push(...terco.songs);data.artists.push(...terco.artists);data.albums.push(...terco.albums);
 // Novos lotes enviados pelo proprietário: mescla sem duplicar música/artista.
-const newMusicChunks=[window.ACORDE_NOVAS_P1,window.ACORDE_NOVAS_P2,window.ACORDE_NOVAS_P3,window.ACORDE_NOVAS_P4,window.ACORDE_NOVAS_P5,window.ACORDE_NOVAS_P6].filter(Boolean);
+const newMusicChunks=[window.ACORDE_NOVAS_P1,window.ACORDE_NOVAS_P2,window.ACORDE_NOVAS_P3,window.ACORDE_NOVAS_P4,window.ACORDE_NOVAS_P5,window.ACORDE_NOVAS_P6,window.ACORDE_BATCH2_1,window.ACORDE_BATCH2_2,window.ACORDE_BATCH2_3,window.ACORDE_BATCH2_4,window.ACORDE_BATCH2_5,window.ACORDE_BATCH2_6,window.ACORDE_BATCH2_7,window.ACORDE_BATCH2_8,window.ACORDE_BATCH2_9].filter(Boolean);
 const importNorm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 const importArtistByName=new Map(data.artists.map(a=>[importNorm(a.name),a.id]));
 const importAlbumByTitle=new Map(data.albums.map(a=>[importNorm(a.title),a.id]));
-const importSongKeys=new Set(data.songs.map(s=>importNorm(s.title)+'|'+importNorm((data.artists.find(a=>a.id===s.artistId)||{}).name)));
+const importSongKeys=new Set(data.songs.map(s=>importNorm(s.title)));
 newMusicChunks.forEach(chunk=>{
  const localArtists=new Map((chunk.artists||[]).map(a=>[a.id,a]));
  (chunk.artists||[]).forEach(a=>{const k=importNorm(a.name);if(!importArtistByName.has(k)){data.artists.push(a);importArtistByName.set(k,a.id)}});
  (chunk.albums||[]).forEach(a=>{const k=importNorm(a.title);if(!importAlbumByTitle.has(k)){data.albums.push(a);importAlbumByTitle.set(k,a.id)}});
- (chunk.songs||[]).forEach(song=>{const srcArtist=localArtists.get(song.artistId),artistName=srcArtist?.name||'',artistId=importArtistByName.get(importNorm(artistName))||song.artistId;const key=importNorm(song.title)+'|'+importNorm(artistName);if(importSongKeys.has(key))return;data.songs.push({...song,artistId,albumId:importAlbumByTitle.get(importNorm((chunk.albums||[]).find(a=>a.id===song.albumId)?.title))||song.albumId});importSongKeys.add(key)});
+ (chunk.songs||[]).forEach(song=>{const srcArtist=localArtists.get(song.artistId),artistName=srcArtist?.name||'',artistId=importArtistByName.get(importNorm(artistName))||song.artistId;const key=importNorm(song.title);if(importSongKeys.has(key))return;data.songs.push({...song,artistId,albumId:importAlbumByTitle.get(importNorm((chunk.albums||[]).find(a=>a.id===song.albumId)?.title))||song.albumId});importSongKeys.add(key)});
 });
 const page=document.body.dataset.page||'home';const base=document.body.dataset.base||'.';
 const globalReadingTheme=localStorage.getItem('as-cifra-theme')==='dark'?'dark':'light';
