@@ -8,7 +8,7 @@ const terco=window.ACORDE_TERCO||{songs:[],artists:[],albums:[],playlists:{},sch
 data.songs.push(...terco.songs);data.artists.push(...terco.artists);data.albums.push(...terco.albums);
 // Novos lotes enviados pelo proprietário: mescla sem duplicar música/artista.
 const newMusicChunks=[window.ACORDE_NOVAS_P1,window.ACORDE_NOVAS_P2,window.ACORDE_NOVAS_P3,window.ACORDE_NOVAS_P4,window.ACORDE_NOVAS_P5,window.ACORDE_NOVAS_P6].filter(Boolean);
-const importNorm=s=>String(s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+const importNorm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 const importArtistByName=new Map(data.artists.map(a=>[importNorm(a.name),a.id]));
 const importAlbumByTitle=new Map(data.albums.map(a=>[importNorm(a.title),a.id]));
 const importSongKeys=new Set(data.songs.map(s=>importNorm(s.title)+'|'+importNorm((data.artists.find(a=>a.id===s.artistId)||{}).name)));
